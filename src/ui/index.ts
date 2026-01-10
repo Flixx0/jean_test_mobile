@@ -20,3 +20,6 @@ export {
   YStack,
   // Add more components as needed
 } from 'tamagui';
+
+export { Icon } from './Icon';
+export type { IconName } from './Icon';

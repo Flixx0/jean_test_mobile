@@ -2,6 +2,7 @@ import { NavigationProp, useNavigation } from '@react-navigation/native';
 import type { NavigationParams } from '@types';
 import { Button, H1, Text, YStack } from '@ui/index';
 import { useInvoices } from '@queries/useInvoices';
+import { StyleSheet } from 'react-native';
 
 export const HomeScreen = () => {
   const { navigate } = useNavigation<NavigationProp<NavigationParams>>();
@@ -14,7 +15,7 @@ export const HomeScreen = () => {
   const count = data?.pagination?.total_entries ?? 0;
 
   return (
-    <YStack gap="$4" style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+    <YStack gap="$4" style={styles.container}>
       <H1 size="$5" fontWeight="600" color="black">
         Pennylane Invoice Editor
       </H1>
@@ -27,3 +28,11 @@ export const HomeScreen = () => {
     </YStack>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
