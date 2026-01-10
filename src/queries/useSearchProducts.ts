@@ -2,11 +2,11 @@ import { useQuery } from '@tanstack/react-query';
 import { useApi } from '@api/index';
 import { queryKeys } from '@queries/queryKeys';
 
-interface UseSearchProductsParams {
+type UseSearchProductsParams = {
   query?: string;
   page?: number;
   perPage?: number;
-}
+};
 
 export const useSearchProducts = (params: UseSearchProductsParams = {}) => {
   const api = useApi();

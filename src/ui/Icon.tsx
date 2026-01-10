@@ -11,7 +11,7 @@ interface IconProps {
 }
 
 /**
- * Composant Icon centralisé pour utiliser les icônes Lucide de manière type-safe
+ * Centralized Icon component to use Lucide icons in a type-safe way
  */
 export const Icon: React.FC<IconProps> = ({ name, color, size = 24, ...props }) => {
   // eslint-disable-next-line import/namespace

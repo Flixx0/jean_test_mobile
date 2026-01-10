@@ -2,11 +2,11 @@ import { useQuery } from '@tanstack/react-query';
 import { useApi } from '@api/index';
 import { queryKeys } from '@queries/queryKeys';
 
-interface UseSearchCustomersParams {
+type UseSearchCustomersParams = {
   query?: string;
   page?: number;
   perPage?: number;
-}
+};
 
 export const useSearchCustomers = (params: UseSearchCustomersParams = {}) => {
   const api = useApi();

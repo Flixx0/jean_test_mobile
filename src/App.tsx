@@ -2,8 +2,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Constants from 'expo-constants';
 import { UIProvider } from '@ui/config';
-import { HomeScreen } from '@screens/Home';
 import { EditorScreen } from '@screens/Editor';
+import { HomeStack } from '@navigators/HomeStack';
 import { ApiProvider } from '@api/index';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Icon } from '@ui/index';
@@ -44,14 +44,14 @@ export const App = () => {
               }}>
               <Tab.Screen
                 name="Home"
-                component={HomeScreen}
+                component={HomeStack}
                 options={{
                   title: 'Invoices',
                   tabBarLabel: 'Invoices',
                   tabBarIcon: ({ color, size }) => (
                     <Icon name="FileText" color={color} size={size} />
                   ),
-                  headerTitle: 'Pennylane Invoices',
+                  headerShown: false,
                 }}
               />
               <Tab.Screen

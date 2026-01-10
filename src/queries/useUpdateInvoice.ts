@@ -5,10 +5,10 @@ import type { Paths } from '@api/generated/client';
 
 type PutInvoiceRequestBody = Paths.PutInvoice.RequestBody;
 
-interface UseUpdateInvoiceParams {
+type UseUpdateInvoiceParams = {
   id: number;
   data: PutInvoiceRequestBody;
-}
+};
 
 export const useUpdateInvoice = () => {
   const api = useApi();
@@ -21,7 +21,7 @@ export const useUpdateInvoice = () => {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.invoices.detail(variables.id) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.invoices.lists() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.invoices.infinite(JSON.stringify([])) });
     },
   });
 };

@@ -13,7 +13,7 @@ export const useDeleteInvoice = () => {
     },
     onSuccess: (deletedId) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.invoices.detail(deletedId) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.invoices.lists() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.invoices.infinite(JSON.stringify([])) });
     },
   });
 };

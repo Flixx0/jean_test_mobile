@@ -11,6 +11,7 @@ module.exports = function (api) {
             '@queries': './src/queries',
             '@api': './src/api',
             '@screens': './src/screens',
+            '@navigators': './src/navigators',
             '@types': './src/types',
             '@ui': './src/ui',
           },
