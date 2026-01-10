@@ -1,8 +1,12 @@
 export const queryKeys = {
   invoices: {
     all: ['invoices'] as const,
-    infinite: (filter?: string, perPage?: number) =>
-      [...queryKeys.invoices.all, 'infinite', { filter, per_page: perPage }] as const,
+    infinite: (filter?: string, perPage?: number, sortOption?: string) =>
+      [
+        ...queryKeys.invoices.all,
+        'infinite',
+        { filter, per_page: perPage, sort: sortOption },
+      ] as const,
     details: () => [...queryKeys.invoices.all, 'detail'] as const,
     detail: (id: number) => [...queryKeys.invoices.details(), id] as const,
   },

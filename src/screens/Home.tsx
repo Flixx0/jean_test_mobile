@@ -1,22 +1,47 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { FlatList, StyleSheet } from 'react-native';
 import type { NavigationParams } from '@types';
-import { Button, H1, Icon, InvoiceCard, Spinner, Text, XStack, YStack } from '@ui/index';
+import {
+  Button,
+  H1,
+  Icon,
+  InvoiceCard,
+  Spinner,
+  Text,
+  XStack,
+  YStack,
+  SortBottomSheet,
+  type SortOption,
+} from '@ui/index';
 import { useInfiniteInvoices } from '@queries/useInfiniteInvoices';
 import { WithSuspense } from '@utils/withSuspense';
-import { useTheme } from 'tamagui';
 
 const InvoicesList = () => {
   const { navigate } = useNavigation<NavigationProp<NavigationParams>>();
+  const [sortOption, setSortOption] = useState<SortOption>('date-desc');
+  const [bottomSheetOpen, setBottomSheetOpen] = useState(false);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteInvoices({
     filter: JSON.stringify([]),
     perPage: 30,
+    sortOption,
   });
 
   const invoices = data.pages.flatMap((page) => page.invoices);
   const totalCount = data.pages[0]?.pagination?.total_entries ?? 0;
+
+  const handleOpenFilter = useCallback(() => {
+    setBottomSheetOpen(true);
+  }, []);
+
+  const handleCloseFilter = useCallback(() => {
+    setBottomSheetOpen(false);
+  }, []);
+
+  const handleSortChange = useCallback((option: SortOption) => {
+    setSortOption(option);
+  }, []);
 
   const handleLoadMore = useCallback(() => {
     if (hasNextPage && !isFetchingNextPage) {
@@ -57,7 +82,7 @@ const InvoicesList = () => {
           <H1 size="$6" fontWeight="600" color="black">
             Your invoices
           </H1>
-          <Button circular style={styles.sortButton} size="$3">
+          <Button circular style={styles.sortButton} size="$3" onPress={handleOpenFilter}>
             <Icon name="ArrowDownUp" size={16} color="black" />
           </Button>
         </XStack>
@@ -74,6 +99,13 @@ const InvoicesList = () => {
         onEndReachedThreshold={0.5}
         ListEmptyComponent={renderEmpty}
         ListFooterComponent={renderFooter}
+      />
+
+      <SortBottomSheet
+        isOpen={bottomSheetOpen}
+        sortOption={sortOption}
+        onSortChange={handleSortChange}
+        onClose={handleCloseFilter}
       />
     </YStack>
   );
