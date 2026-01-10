@@ -1,4 +1,4 @@
-import { Button, YStack } from '../ui';
+import { Button, YStack } from '@ui/index';
 
 export const EditorScreen = () => {
   const onCreateInvoice = () => {

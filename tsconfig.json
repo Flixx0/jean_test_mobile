@@ -3,5 +3,14 @@
   "compilerOptions": {
     "moduleResolution": "bundler",
     "strict": true,
+    "baseUrl": ".",
+    "paths": {
+      "@queries/*": ["src/queries/*"],
+      "@api/*": ["src/api/*"],
+      "@screens/*": ["src/screens/*"],
+      "@types": ["src/types"],
+      "@types/*": ["src/types/*"],
+      "@ui/*": ["src/ui/*"]
+    }
   }
 }

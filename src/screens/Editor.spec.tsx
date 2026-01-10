@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react-native';
-import { EditorScreen } from './Editor';
+import { EditorScreen } from '@screens/Editor';
 import { withSpecWrapper } from '../specs/wrapper';
 
 describe('Editor', () => {

@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { UIProvider } from '../ui/config';
+import { UIProvider } from '@ui/config';
 
 const queryClient = new QueryClient();
 
