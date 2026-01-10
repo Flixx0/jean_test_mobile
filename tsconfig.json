@@ -12,7 +12,8 @@
       "@utils/*": ["src/utils/*"],
       "@types": ["src/types"],
       "@types/*": ["src/types/*"],
-      "@ui/*": ["src/ui/*"]
+      "@ui/*": ["src/ui/*"],
+      "@components/*": ["src/components/*"]
     }
   }
 }

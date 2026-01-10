@@ -1,14 +1,10 @@
 import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Constants from 'expo-constants';
 import { UIProvider } from '@ui/config';
-import { EditorScreen } from '@screens/Editor';
-import { HomeStack } from '@navigators/HomeStack';
+import { TabNavigator } from '@navigators/TabNavigator';
 import { ApiProvider } from '@api/index';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Icon } from '@ui/index';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -22,62 +18,19 @@ const queryClient = new QueryClient({
   },
 });
 
-const Tab = createBottomTabNavigator();
-
 const apiUrl = Constants.expoConfig?.extra?.apiUrl || 'https://jean-test-api.herokuapp.com/';
 const apiToken = Constants.expoConfig?.extra?.apiToken || '';
 
 export const App = () => {
   return (
-    <GestureHandlerRootView style={styles.container}>
-      <ApiProvider url={apiUrl} token={apiToken}>
-        <QueryClientProvider client={queryClient}>
-          <UIProvider>
-            <NavigationContainer>
-              <Tab.Navigator
-                screenOptions={{
-                  tabBarActiveTintColor: '#007AFF',
-                  tabBarInactiveTintColor: '#8E8E93',
-                  headerShown: true,
-                  tabBarStyle: {
-                    paddingBottom: 10,
-                    paddingTop: 5,
-                    height: 80,
-                  },
-                }}>
-                <Tab.Screen
-                  name="Home"
-                  component={HomeStack}
-                  options={{
-                    title: 'Invoices',
-                    tabBarLabel: 'Invoices',
-                    tabBarIcon: ({ color, size }) => (
-                      <Icon name="FileText" color={color} size={size} />
-                    ),
-                    headerShown: false,
-                  }}
-                />
-                <Tab.Screen
-                  name="Editor"
-                  component={EditorScreen}
-                  options={{
-                    title: 'Create',
-                    tabBarLabel: 'Create',
-                    tabBarIcon: ({ color, size }) => <Icon name="Plus" color={color} size={size} />,
-                    headerTitle: 'Create Invoice',
-                  }}
-                />
-              </Tab.Navigator>
-            </NavigationContainer>
-          </UIProvider>
-        </QueryClientProvider>
-      </ApiProvider>
-    </GestureHandlerRootView>
+    <ApiProvider url={apiUrl} token={apiToken}>
+      <QueryClientProvider client={queryClient}>
+        <UIProvider>
+          <NavigationContainer>
+            <TabNavigator />
+          </NavigationContainer>
+        </UIProvider>
+      </QueryClientProvider>
+    </ApiProvider>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

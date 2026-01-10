@@ -1,8 +1,13 @@
 import { defaultConfig } from '@tamagui/config/v4';
 import { PropsWithChildren } from 'react';
-import { createTamagui, TamaguiProvider } from 'tamagui';
+import { useColorScheme } from 'react-native';
+import { createTamagui, TamaguiProvider, Theme } from 'tamagui';
+import { themes } from './themes';
 
-export const tamaguiConfig = createTamagui(defaultConfig);
+export const tamaguiConfig = createTamagui({
+  ...defaultConfig,
+  themes,
+});
 
 export default tamaguiConfig;
 
@@ -13,5 +18,14 @@ declare module 'tamagui' {
 }
 
 export const UIProvider = ({ children }: PropsWithChildren) => {
-  return <TamaguiProvider config={tamaguiConfig}>{children}</TamaguiProvider>;
+  const colorScheme = useColorScheme();
+  const themeName = colorScheme === 'dark' ? 'dark' : 'light';
+
+  return (
+    <TamaguiProvider config={tamaguiConfig} defaultTheme={themeName}>
+      <Theme name={themeName} key={themeName}>
+        {children}
+      </Theme>
+    </TamaguiProvider>
+  );
 };

@@ -3,18 +3,10 @@ import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { FlatList, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { NavigationParams } from '@types';
-import {
-  Button,
-  H1,
-  Icon,
-  InvoiceCard,
-  Spinner,
-  Text,
-  XStack,
-  YStack,
-  SortBottomSheet,
-  type SortOption,
-} from '@ui/index';
+import { Button, H1, Spinner, Text, XStack, YStack, useTheme } from '@ui/index';
+import { Icon } from '@components/Icon';
+import { InvoiceCard } from '@components/InvoiceCard';
+import { SortInvoicesBottomSheet, type SortOption } from '@components/SortInvoicesBottomSheet';
 import { useInfiniteInvoices } from '@queries/useInfiniteInvoices';
 import { WithSuspense } from '@utils/withSuspense';
 
@@ -22,6 +14,7 @@ const InvoicesList = () => {
   const { navigate } = useNavigation<NavigationProp<NavigationParams>>();
   const [sortOption, setSortOption] = useState<SortOption>('date-desc');
   const [bottomSheetOpen, setBottomSheetOpen] = useState(false);
+  const theme = useTheme();
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteInvoices({
     filter: JSON.stringify([]),
@@ -70,25 +63,38 @@ const InvoicesList = () => {
   const renderEmpty = useCallback(() => {
     return (
       <YStack flex={1} style={styles.centerContent} gap="$4">
-        <Text color="black">No invoices found.</Text>
+        <Text color="$color12">No invoices found.</Text>
         <Button onPress={() => navigate('Editor')}>Create a new invoice</Button>
       </YStack>
     );
   }, [navigate]);
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <YStack flex={1} style={styles.container}>
-        <YStack style={styles.header}>
+    <SafeAreaView
+      style={[styles.safeArea, { backgroundColor: theme.background?.val }]}
+      edges={['top']}>
+      <YStack flex={1} style={[styles.container, { backgroundColor: theme.backgroundHover?.val }]}>
+        <YStack
+          style={[
+            styles.header,
+            {
+              backgroundColor: theme.background?.val,
+              borderBottomColor: theme.borderColor?.val,
+            },
+          ]}>
           <XStack style={styles.headerContent}>
-            <H1 size="$6" fontWeight="600" color="black">
+            <H1 size="$6" fontWeight="600" color="$color12">
               Your invoices
             </H1>
-            <Button circular style={styles.sortButton} size="$3" onPress={handleOpenFilter}>
-              <Icon name="ArrowDownUp" size={16} color="black" />
+            <Button
+              circular
+              style={{ backgroundColor: theme.backgroundHover?.val }}
+              size="$3"
+              onPress={handleOpenFilter}>
+              <Icon name="ArrowDownUp" size={16} color={theme.color12?.val} />
             </Button>
           </XStack>
-          <Text fontSize="$3" color="gray">
+          <Text fontSize="$3" color="$color11">
             {totalCount} total invoices
           </Text>
         </YStack>
@@ -103,7 +109,7 @@ const InvoicesList = () => {
           ListFooterComponent={renderFooter}
         />
 
-        <SortBottomSheet
+        <SortInvoicesBottomSheet
           isOpen={bottomSheetOpen}
           sortOption={sortOption}
           onSortChange={handleSortChange}
@@ -125,17 +131,13 @@ export const HomeScreen = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: 'white',
   },
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
   },
   header: {
     padding: 16,
-    backgroundColor: 'white',
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
   },
   headerContent: {
     alignItems: 'center',
@@ -147,8 +149,5 @@ const styles = StyleSheet.create({
   },
   footer: {
     padding: 16,
-  },
-  sortButton: {
-    backgroundColor: '#f5f5f5',
   },
 });
