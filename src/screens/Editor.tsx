@@ -1,12 +1,13 @@
-import { useCallback, useState } from 'react';
-import { useForm, useFieldArray, Controller } from 'react-hook-form';
+import { useCallback, useState, useMemo } from 'react';
+import { useForm, useFieldArray, Controller, useWatch } from 'react-hook-form';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { ScrollView, StyleSheet } from 'react-native';
+import { Alert, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { NavigationParams } from '@types';
-import { Button, Checkbox, H2, Input, Label, Text, XStack, YStack, useTheme } from '@ui/index';
+import { Button, H2, Input, Label, Text, XStack, YStack, useTheme } from '@ui/index';
 import { Icon } from '@components/Icon';
 import { DatePickerInput } from '@components/DatePickerInput';
+import { StatusSelect, type InvoiceStatus } from '@components/StatusSelect';
 import { useCreateInvoice } from '@queries/useCreateInvoice';
 import type { Paths } from '@api/generated/client';
 
@@ -35,7 +36,7 @@ export const EditorScreen = () => {
   const createInvoiceMutation = useCreateInvoice();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { control, handleSubmit, formState } = useForm<InvoiceFormData>({
+  const { control, handleSubmit, formState, setValue } = useForm<InvoiceFormData>({
     defaultValues: {
       customer_id: '',
       finalized: false,
@@ -45,6 +46,35 @@ export const EditorScreen = () => {
       invoice_lines_attributes: [{ product_id: '', quantity: '1' }],
     },
   });
+
+  const finalized = useWatch({ control, name: 'finalized' });
+  const paid = useWatch({ control, name: 'paid' });
+
+  const currentStatus: InvoiceStatus = useMemo(() => {
+    if (paid) return 'paid';
+    if (finalized) return 'finalized';
+    return 'draft';
+  }, [finalized, paid]);
+
+  const handleStatusChange = useCallback(
+    (status: InvoiceStatus) => {
+      switch (status) {
+        case 'draft':
+          setValue('finalized', false);
+          setValue('paid', false);
+          break;
+        case 'finalized':
+          setValue('finalized', true);
+          setValue('paid', false);
+          break;
+        case 'paid':
+          setValue('finalized', true);
+          setValue('paid', true);
+          break;
+      }
+    },
+    [setValue],
+  );
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -71,7 +101,7 @@ export const EditorScreen = () => {
 
         const response = await createInvoiceMutation.mutateAsync(payload);
         if (response?.id) {
-          navigation.navigate('Invoice', { id: response.id });
+          Alert.alert('Invoice created successfully', `Invoice ID: ${response.id}`);
         } else {
           navigation.goBack();
         }
@@ -110,11 +140,22 @@ export const EditorScreen = () => {
           styles.contentContainer,
           { backgroundColor: theme.background?.val },
         ]}>
-        <YStack gap="$4" p="$4">
+        <YStack gap="$3" p="$4">
           <H2 size="$7" fontWeight="600">
             Create Invoice
           </H2>
-          <YStack gap="$3">
+          <YStack gap="$1">
+            <Label htmlFor="status" fontSize="$4" color="$color12">
+              Status
+            </Label>
+            <StatusSelect
+              id="status"
+              value={currentStatus}
+              onChange={handleStatusChange}
+              placeholder="Select status"
+            />
+          </YStack>
+          <YStack gap="$1">
             <Label htmlFor="customer_id" fontSize="$4">
               Customer ID
             </Label>
@@ -139,7 +180,7 @@ export const EditorScreen = () => {
               </Text>
             )}
           </YStack>
-          <YStack gap="$3">
+          <YStack gap="$1">
             <Label htmlFor="date" fontSize="$4" color="$color12">
               Date
             </Label>
@@ -163,7 +204,7 @@ export const EditorScreen = () => {
               </Text>
             )}
           </YStack>
-          <YStack gap="$3">
+          <YStack gap="$1">
             <Label htmlFor="deadline" fontSize="$4" color="$color12">
               Deadline
             </Label>
@@ -187,48 +228,7 @@ export const EditorScreen = () => {
               </Text>
             )}
           </YStack>
-          <XStack gap="$4" style={{ alignItems: 'center' }}>
-            <Controller
-              control={control}
-              name="finalized"
-              render={({ field: { onChange, value } }) => (
-                <XStack gap="$2" style={{ alignItems: 'center' }}>
-                  <Checkbox
-                    id="finalized"
-                    checked={value}
-                    onCheckedChange={(checked) => onChange(checked === true)}>
-                    <Checkbox.Indicator>
-                      <Icon name="Check" size={16} color={theme.color12?.val} />
-                    </Checkbox.Indicator>
-                  </Checkbox>
-                  <Label htmlFor="finalized" fontSize="$4" color="$color12">
-                    Finalized
-                  </Label>
-                </XStack>
-              )}
-            />
-
-            <Controller
-              control={control}
-              name="paid"
-              render={({ field: { onChange, value } }) => (
-                <XStack gap="$2" style={{ alignItems: 'center' }}>
-                  <Checkbox
-                    id="paid"
-                    checked={value}
-                    onCheckedChange={(checked) => onChange(checked === true)}>
-                    <Checkbox.Indicator>
-                      <Icon name="Check" size={16} color={theme.color12?.val} />
-                    </Checkbox.Indicator>
-                  </Checkbox>
-                  <Label htmlFor="paid" fontSize="$4" color="$color12">
-                    Paid
-                  </Label>
-                </XStack>
-              )}
-            />
-          </XStack>
-          <YStack gap="$3">
+          <YStack gap="$1">
             <XStack style={{ alignItems: 'center', justifyContent: 'space-between' }}>
               <Label fontSize="$4" color="$color12">
                 Invoice Lines
@@ -286,20 +286,24 @@ export const EditorScreen = () => {
                     size="$3"
                     circular
                     onPress={() => removeInvoiceLine(index)}
-                    style={{ backgroundColor: theme.red2?.val }}>
+                    style={{
+                      backgroundColor: theme.red2?.val,
+                    }}>
                     <Icon name="X" size={16} color={theme.color12?.val} />
                   </Button>
                 )}
               </XStack>
             ))}
           </YStack>
-          <Button size="$5" bg="$accent1" onPress={handleSubmit(onSubmit)} disabled={isSubmitting}>
-            <Text fontSize="$5" fontWeight="600" color="$accent11">
-              {isSubmitting ? 'Creating...' : 'Create Invoice'}
-            </Text>
-          </Button>
         </YStack>
       </ScrollView>
+      <YStack p="$4">
+        <Button size="$5" bg="$accent1" onPress={handleSubmit(onSubmit)} disabled={isSubmitting}>
+          <Text fontSize="$5" fontWeight="600" color="$accent11">
+            {isSubmitting ? 'Creating...' : 'Create Invoice'}
+          </Text>
+        </Button>
+      </YStack>
     </SafeAreaView>
   );
 };

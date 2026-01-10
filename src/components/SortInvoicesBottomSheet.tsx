@@ -92,15 +92,9 @@ export const SortInvoicesBottomSheet = ({
                 <Button
                   key={option.value}
                   onPress={() => handleSortChange(option.value)}
-                  style={[
-                    isSelected
-                      ? {
-                          backgroundColor: theme.blue2?.val,
-                          borderColor: theme.blue10?.val,
-                          borderWidth: 1,
-                        }
-                      : { backgroundColor: theme.backgroundHover?.val },
-                  ]}>
+                  bg={isSelected ? theme.blue2?.val : theme.backgroundHover?.val}
+                  borderColor={isSelected ? theme.blue10?.val : 'transparent'}
+                  borderWidth={1}>
                   <XStack style={styles.sortOptionContent} gap="$2">
                     <Text fontSize="$4" color={textColor}>
                       {option.label}

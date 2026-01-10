@@ -107,6 +107,7 @@ const InvoicesList = () => {
             onEndReachedThreshold={0.5}
             ListEmptyComponent={renderEmpty}
             ListFooterComponent={renderFooter}
+            contentContainerStyle={{ paddingBottom: 100 }}
           />
         </View>
 
