@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { useApi } from '@api/index';
 import { queryKeys } from '@queries/queryKeys';
 
@@ -12,7 +12,7 @@ export const useSearchCustomers = (params: UseSearchCustomersParams = {}) => {
   const api = useApi();
   const { query, page, perPage } = params;
 
-  return useQuery({
+  return useSuspenseQuery({
     queryKey: queryKeys.customers.search(query, page, perPage),
     queryFn: async () => {
       const response = await api.getSearchCustomers({
@@ -22,6 +22,5 @@ export const useSearchCustomers = (params: UseSearchCustomersParams = {}) => {
       });
       return response.data;
     },
-    enabled: !!query,
   });
 };

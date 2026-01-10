@@ -37,9 +37,9 @@ export const App = () => {
                 tabBarInactiveTintColor: '#8E8E93',
                 headerShown: true,
                 tabBarStyle: {
-                  paddingBottom: 5,
+                  paddingBottom: 10,
                   paddingTop: 5,
-                  height: 60,
+                  height: 80,
                 },
               }}>
               <Tab.Screen

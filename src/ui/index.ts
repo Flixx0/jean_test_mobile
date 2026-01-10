@@ -13,6 +13,7 @@ export {
   Paragraph,
   Select,
   Sheet,
+  Spinner,
   Switch,
   Text,
   TextArea,
@@ -23,3 +24,5 @@ export {
 
 export { Icon } from './Icon';
 export type { IconName } from './Icon';
+export { InvoiceStatus } from './InvoiceStatus';
+export { InvoiceCard } from './InvoiceCard';

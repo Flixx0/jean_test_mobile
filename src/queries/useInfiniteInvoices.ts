@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useSuspenseInfiniteQuery } from '@tanstack/react-query';
 import { useApi } from '@api/index';
 import { queryKeys } from '@queries/queryKeys';
 
@@ -14,7 +14,7 @@ export const useInfiniteInvoices = (params: UseInfiniteInvoicesParams = {}) => {
   const api = useApi();
   const { filter = JSON.stringify([]), perPage = 50 } = params;
 
-  return useInfiniteQuery({
+  return useSuspenseInfiniteQuery({
     queryKey: queryKeys.invoices.infinite(filter, perPage),
     queryFn: async ({ pageParam = 1 }) => {
       const response = await api.getInvoices({
