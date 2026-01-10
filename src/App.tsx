@@ -1,23 +1,21 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import Constants from 'expo-constants';
 import { UIProvider } from './ui/config';
 import { HomeScreen } from './screens/Home';
 import { EditorScreen } from './screens/Editor';
 import { ApiProvider } from './api';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-/**
- * API token to authenticate requests
- * provided by email.
- */
-const API_TOKEN = '';
-
 const queryClient = new QueryClient();
 const Stack = createStackNavigator();
 
+const apiUrl = Constants.expoConfig?.extra?.apiUrl || 'https://jean-test-api.herokuapp.com/';
+const apiToken = Constants.expoConfig?.extra?.apiToken || '';
+
 export const App = () => {
   return (
-    <ApiProvider url="https://jean-test-api.herokuapp.com/" token={API_TOKEN}>
+    <ApiProvider url={apiUrl} token={apiToken}>
       <QueryClientProvider client={queryClient}>
         <UIProvider>
           <NavigationContainer>

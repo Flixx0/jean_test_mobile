@@ -1,9 +1,9 @@
 {
   "editor.formatOnSave": true,
   "[typescriptreact]": {
-    "editor.defaultFormatter": "prettier.prettier-vscode"
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
   },
   "[typescript]": {
     "editor.defaultFormatter": "prettier.prettier-vscode"
-  },
+  }
 }
