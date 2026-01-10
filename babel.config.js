@@ -11,6 +11,8 @@ module.exports = function (api) {
             '@queries': './src/queries',
             '@api': './src/api',
             '@screens': './src/screens',
+            '@navigators': './src/navigators',
+            '@utils': './src/utils',
             '@types': './src/types',
             '@ui': './src/ui',
           },
@@ -20,7 +22,7 @@ module.exports = function (api) {
         '@tamagui/babel-plugin',
         {
           components: ['tamagui'],
-          config: './src/ui/tamagui.config.ts',
+          config: './src/ui/config.tsx',
           logTimings: true,
           disableExtraction: process.env.NODE_ENV === 'development',
         },

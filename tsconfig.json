@@ -8,6 +8,8 @@
       "@queries/*": ["src/queries/*"],
       "@api/*": ["src/api/*"],
       "@screens/*": ["src/screens/*"],
+      "@navigators/*": ["src/navigators/*"],
+      "@utils/*": ["src/utils/*"],
       "@types": ["src/types"],
       "@types/*": ["src/types/*"],
       "@ui/*": ["src/ui/*"]

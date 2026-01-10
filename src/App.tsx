@@ -1,11 +1,14 @@
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Constants from 'expo-constants';
 import { UIProvider } from '@ui/config';
-import { HomeScreen } from '@screens/Home';
 import { EditorScreen } from '@screens/Editor';
+import { HomeStack } from '@navigators/HomeStack';
 import { ApiProvider } from '@api/index';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Icon } from '@ui/index';
+import { StyleSheet } from 'react-native';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -19,24 +22,62 @@ const queryClient = new QueryClient({
   },
 });
 
-const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
 
 const apiUrl = Constants.expoConfig?.extra?.apiUrl || 'https://jean-test-api.herokuapp.com/';
 const apiToken = Constants.expoConfig?.extra?.apiToken || '';
 
 export const App = () => {
   return (
-    <ApiProvider url={apiUrl} token={apiToken}>
-      <QueryClientProvider client={queryClient}>
-        <UIProvider>
-          <NavigationContainer>
-            <Stack.Navigator>
-              <Stack.Screen name="Home" component={HomeScreen} />
-              <Stack.Screen name="Editor" component={EditorScreen} />
-            </Stack.Navigator>
-          </NavigationContainer>
-        </UIProvider>
-      </QueryClientProvider>
-    </ApiProvider>
+    <GestureHandlerRootView style={styles.container}>
+      <ApiProvider url={apiUrl} token={apiToken}>
+        <QueryClientProvider client={queryClient}>
+          <UIProvider>
+            <NavigationContainer>
+              <Tab.Navigator
+                screenOptions={{
+                  tabBarActiveTintColor: '#007AFF',
+                  tabBarInactiveTintColor: '#8E8E93',
+                  headerShown: true,
+                  tabBarStyle: {
+                    paddingBottom: 10,
+                    paddingTop: 5,
+                    height: 80,
+                  },
+                }}>
+                <Tab.Screen
+                  name="Home"
+                  component={HomeStack}
+                  options={{
+                    title: 'Invoices',
+                    tabBarLabel: 'Invoices',
+                    tabBarIcon: ({ color, size }) => (
+                      <Icon name="FileText" color={color} size={size} />
+                    ),
+                    headerShown: false,
+                  }}
+                />
+                <Tab.Screen
+                  name="Editor"
+                  component={EditorScreen}
+                  options={{
+                    title: 'Create',
+                    tabBarLabel: 'Create',
+                    tabBarIcon: ({ color, size }) => <Icon name="Plus" color={color} size={size} />,
+                    headerTitle: 'Create Invoice',
+                  }}
+                />
+              </Tab.Navigator>
+            </NavigationContainer>
+          </UIProvider>
+        </QueryClientProvider>
+      </ApiProvider>
+    </GestureHandlerRootView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});

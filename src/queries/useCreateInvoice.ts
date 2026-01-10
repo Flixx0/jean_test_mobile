@@ -15,7 +15,7 @@ export const useCreateInvoice = () => {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.invoices.lists() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.invoices.infinite(JSON.stringify([])) });
     },
   });
 };
