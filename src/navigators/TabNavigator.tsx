@@ -12,8 +12,8 @@ export const TabNavigator = () => {
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarActiveTintColor: theme.blue10?.val,
-        tabBarInactiveTintColor: theme.color10?.val,
+        tabBarActiveTintColor: theme.accent4?.val,
+        tabBarInactiveTintColor: theme.color03?.val,
         headerShown: true,
         tabBarStyle: {
           backgroundColor: theme.background?.val,
@@ -40,7 +40,7 @@ export const TabNavigator = () => {
           title: 'Create',
           tabBarLabel: 'Create',
           tabBarIcon: ({ color, size }) => <Icon name="Plus" color={color} size={size} />,
-          headerTitle: 'Create Invoice',
+          headerShown: false,
         }}
       />
     </Tab.Navigator>

@@ -3,7 +3,8 @@ import { Text, XStack, YStack, useTheme } from 'tamagui';
 import { InvoiceStatus } from './InvoiceStatus';
 import type { Paths } from '@api/generated/client';
 import { formatPriceWithCurrency } from '@utils/formatPrice';
-
+import { format, isAfter, isBefore } from 'date-fns';
+import { useMemo } from 'react';
 type InvoiceItem = Paths.GetInvoices.Responses.$200['invoices'][number];
 
 type InvoiceCardProps = {
@@ -13,6 +14,11 @@ type InvoiceCardProps = {
 
 export const InvoiceCard = ({ invoice, onPress }: InvoiceCardProps) => {
   const theme = useTheme();
+
+  const isOverdue = useMemo(
+    () => invoice.deadline && isBefore(new Date(invoice.deadline), new Date()),
+    [invoice.deadline],
+  );
 
   return (
     <XStack style={[styles.card, { backgroundColor: theme.background?.val }]} onPress={onPress}>
@@ -25,13 +31,22 @@ export const InvoiceCard = ({ invoice, onPress }: InvoiceCardProps) => {
             {invoice.customer.first_name} {invoice.customer.last_name}
           </Text>
         )}
-        <Text fontSize="$3" color="$color11">
-          {invoice.date}
-        </Text>
+        <XStack gap="$2">
+          {invoice.date ? (
+            <Text fontSize="$3" color="$color11">
+              {format(new Date(invoice.date), 'dd/MM/yyyy')}
+            </Text>
+          ) : null}
+          {invoice.deadline ? (
+            <Text fontSize="$3" color={isOverdue ? '$red10' : '$color11'}>
+              Due: {format(new Date(invoice.deadline), 'dd/MM/yyyy')}
+            </Text>
+          ) : null}
+        </XStack>
       </YStack>
       <YStack style={styles.status}>
         <InvoiceStatus finalized={invoice.finalized} paid={invoice.paid} />
-        <Text fontSize="$3" fontWeight="600" color="$color12">
+        <Text fontSize="$3" fontWeight="600">
           {invoice.total ? formatPriceWithCurrency(invoice.total) : '-'}
         </Text>
       </YStack>

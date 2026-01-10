@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { FlatList, StyleSheet } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { NavigationParams } from '@types';
 import { Button, H1, Spinner, Text, XStack, YStack, useTheme } from '@ui/index';
@@ -83,7 +83,7 @@ const InvoicesList = () => {
             },
           ]}>
           <XStack style={styles.headerContent}>
-            <H1 size="$6" fontWeight="600" color="$color12">
+            <H1 size="$6" fontWeight="600">
               Your invoices
             </H1>
             <Button
@@ -98,16 +98,17 @@ const InvoicesList = () => {
             {totalCount} total invoices
           </Text>
         </YStack>
-
-        <FlatList
-          data={invoices}
-          renderItem={renderInvoiceItem}
-          keyExtractor={(item) => `invoice-${item.id}`}
-          onEndReached={handleLoadMore}
-          onEndReachedThreshold={0.5}
-          ListEmptyComponent={renderEmpty}
-          ListFooterComponent={renderFooter}
-        />
+        <View style={{ backgroundColor: theme.color3?.val }}>
+          <FlatList
+            data={invoices}
+            renderItem={renderInvoiceItem}
+            keyExtractor={(item) => `invoice-${item.id}`}
+            onEndReached={handleLoadMore}
+            onEndReachedThreshold={0.5}
+            ListEmptyComponent={renderEmpty}
+            ListFooterComponent={renderFooter}
+          />
+        </View>
 
         <SortInvoicesBottomSheet
           isOpen={bottomSheetOpen}
