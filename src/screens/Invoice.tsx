@@ -1,7 +1,8 @@
 import { useInvoice } from '@queries/useInvoice';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { NavigationParams } from '@types';
-import { H1, H3, InvoiceStatus, Text, XStack, YStack } from '@ui/index';
+import { H3, Text, XStack, YStack } from '@ui/index';
+import { InvoiceStatus } from '@components/InvoiceStatus';
 import { formatPriceWithCurrency } from '@utils/formatPrice';
 import { WithSuspense } from '@utils/withSuspense';
 import { StyleSheet } from 'react-native';

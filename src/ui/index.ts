@@ -19,14 +19,6 @@ export {
   TextArea,
   XStack,
   YStack,
+  useTheme,
   // Add more components as needed
 } from 'tamagui';
-
-export { Icon } from './Icon';
-export type { IconName } from './Icon';
-export { InvoiceStatus } from './InvoiceStatus';
-export { InvoiceCard } from './InvoiceCard';
-export { BottomSheetWrapper } from './BottomSheet';
-export type { BottomSheetRef } from './BottomSheet';
-export { SortBottomSheet } from './SortBottomSheet';
-export type { SortOption, SortBottomSheetRef } from './SortBottomSheet';

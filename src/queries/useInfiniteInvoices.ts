@@ -1,7 +1,7 @@
 import { useSuspenseInfiniteQuery } from '@tanstack/react-query';
 import { useApi } from '@api/index';
 import { queryKeys } from '@queries/queryKeys';
-import type { SortOption } from '@ui/index';
+import type { SortOption } from '@components/SortInvoicesBottomSheet';
 
 type UseInfiniteInvoicesParams = {
   filter?: string;
