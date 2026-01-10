@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { FlatList, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import type { NavigationParams } from '@types';
 import {
   Button,
@@ -76,38 +77,40 @@ const InvoicesList = () => {
   }, [navigate]);
 
   return (
-    <YStack flex={1} style={styles.container}>
-      <YStack style={styles.header}>
-        <XStack style={styles.headerContent}>
-          <H1 size="$6" fontWeight="600" color="black">
-            Your invoices
-          </H1>
-          <Button circular style={styles.sortButton} size="$3" onPress={handleOpenFilter}>
-            <Icon name="ArrowDownUp" size={16} color="black" />
-          </Button>
-        </XStack>
-        <Text fontSize="$3" color="gray">
-          {totalCount} total invoices
-        </Text>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <YStack flex={1} style={styles.container}>
+        <YStack style={styles.header}>
+          <XStack style={styles.headerContent}>
+            <H1 size="$6" fontWeight="600" color="black">
+              Your invoices
+            </H1>
+            <Button circular style={styles.sortButton} size="$3" onPress={handleOpenFilter}>
+              <Icon name="ArrowDownUp" size={16} color="black" />
+            </Button>
+          </XStack>
+          <Text fontSize="$3" color="gray">
+            {totalCount} total invoices
+          </Text>
+        </YStack>
+
+        <FlatList
+          data={invoices}
+          renderItem={renderInvoiceItem}
+          keyExtractor={(item) => `invoice-${item.id}`}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.5}
+          ListEmptyComponent={renderEmpty}
+          ListFooterComponent={renderFooter}
+        />
+
+        <SortBottomSheet
+          isOpen={bottomSheetOpen}
+          sortOption={sortOption}
+          onSortChange={handleSortChange}
+          onClose={handleCloseFilter}
+        />
       </YStack>
-
-      <FlatList
-        data={invoices}
-        renderItem={renderInvoiceItem}
-        keyExtractor={(item) => `invoice-${item.id}`}
-        onEndReached={handleLoadMore}
-        onEndReachedThreshold={0.5}
-        ListEmptyComponent={renderEmpty}
-        ListFooterComponent={renderFooter}
-      />
-
-      <SortBottomSheet
-        isOpen={bottomSheetOpen}
-        sortOption={sortOption}
-        onSortChange={handleSortChange}
-        onClose={handleCloseFilter}
-      />
-    </YStack>
+    </SafeAreaView>
   );
 };
 
@@ -120,6 +123,10 @@ export const HomeScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',

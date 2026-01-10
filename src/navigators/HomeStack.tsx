@@ -11,13 +11,19 @@ export const HomeStack = () => {
         name="HomeScreen"
         component={HomeScreen}
         options={{
-          headerTitle: 'Pennylane Invoices',
+          headerShown: false,
         }}
       />
       <Stack.Screen
         name="Invoice"
         component={InvoiceScreen}
-        options={{ headerTitle: '', headerBackButtonDisplayMode: 'minimal' }}
+        options={{
+          headerTitle: '',
+          headerBackButtonDisplayMode: 'minimal',
+          gestureEnabled: true,
+          fullScreenGestureEnabled: true,
+          animation: 'slide_from_right',
+        }}
       />
     </Stack.Navigator>
   );
