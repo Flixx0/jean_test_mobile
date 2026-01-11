@@ -6,16 +6,10 @@ import { Button, H2, Input, Text, XStack, YStack, useTheme } from '@ui/index';
 import { Icon } from '@components/Icon';
 import { WithSuspense } from '@utils/withSuspense';
 
-type EditorStackParams = {
-  Editor: undefined;
-  CustomerSelect: { onSelectCustomer: (customer: any) => void };
-  ProductSelect: { onSelectProduct: (product: any) => void };
-};
-
 type SelectScreenProps = {
   title: string;
   searchPlaceholder: string;
-  itemName: string; // e.g., "customer" or "product"
+  itemName: string;
   onClose: () => void;
   children: (debouncedSearchQuery: string) => ReactNode;
   totalCount: number;
