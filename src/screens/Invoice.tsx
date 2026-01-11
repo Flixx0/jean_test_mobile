@@ -1,45 +1,142 @@
-import { useInvoice } from '@queries/useInvoice';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { useCallback, useMemo } from 'react';
+import { Alert, StyleSheet } from 'react-native';
+import { RouteProp, useRoute, useNavigation, NavigationProp } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { NavigationParams } from '@types';
-import { H3, Text, XStack, YStack } from '@ui/index';
-import { InvoiceStatus } from '@components/InvoiceStatus';
-import { formatPriceWithCurrency } from '@utils/formatPrice';
+import { YStack, useTheme, Separator, Button } from '@ui/index';
+import { InvoiceHeader } from '@components/InvoiceHeader';
+import { InvoiceCustomerInfo } from '@components/InvoiceCustomerInfo';
+import { InvoiceDates } from '@components/InvoiceDates';
+import { InvoiceItemsList } from '@components/InvoiceItemsList';
+import { InvoiceTotals } from '@components/InvoiceTotals';
+import { useInvoice } from '@queries/useInvoice';
+import { useDeleteInvoice } from '@queries/useDeleteInvoice';
 import { WithSuspense } from '@utils/withSuspense';
-import { StyleSheet } from 'react-native';
+import type { Components } from '@api/generated/client';
+import { isBefore } from 'date-fns';
+import { useUpdateInvoice } from '@queries/useUpdateInvoice';
+
+// Extend Invoice type to include customer (API returns it but types don't reflect it)
+type InvoiceWithCustomer = Components.Schemas.Invoice & {
+  customer?: Components.Schemas.Customer;
+};
 
 const InvoiceData = ({ id }: { id: number }) => {
+  const navigation = useNavigation<NavigationProp<NavigationParams>>();
+  const theme = useTheme();
   const { data } = useInvoice(id);
+  const invoiceData = data as InvoiceWithCustomer;
+
+  const deleteInvoiceMutation = useDeleteInvoice();
+  const updateInvoiceMutation = useUpdateInvoice();
+
+  const isOverdue = useMemo(
+    () => Boolean(invoiceData.deadline && isBefore(new Date(invoiceData.deadline), new Date())),
+    [invoiceData.deadline],
+  );
+
+  const handleEdit = useCallback(() => {
+    // TODO: Navigate to editor with invoice data
+    navigation.navigate('Editor');
+  }, [navigation]);
+
+  const handleDelete = useCallback(() => {
+    Alert.alert('Delete Invoice', 'Are you sure you want to delete this invoice?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => {
+          deleteInvoiceMutation.mutate(id, {
+            onSuccess: () => {
+              navigation.goBack();
+            },
+            onError: (error) => {
+              console.error('Error deleting invoice', error);
+            },
+          });
+        },
+      },
+    ]);
+  }, [deleteInvoiceMutation, id, navigation]);
+
+  const handleChangeStatus = useCallback(() => {
+    if (invoiceData.paid) return;
+
+    if (invoiceData.finalized) {
+      updateInvoiceMutation.mutate({
+        id,
+        data: {
+          invoice: {
+            id: invoiceData.id,
+            customer_id: invoiceData.customer_id ?? undefined,
+            finalized: invoiceData.finalized,
+            paid: true,
+            date: invoiceData.date ?? undefined,
+            deadline: invoiceData.deadline ?? undefined,
+          },
+        },
+      });
+    } else {
+      updateInvoiceMutation.mutate({
+        id,
+        data: {
+          invoice: {
+            id: invoiceData.id,
+            customer_id: invoiceData.customer_id ?? undefined,
+            finalized: true,
+            paid: invoiceData.paid,
+            date: invoiceData.date ?? undefined,
+            deadline: invoiceData.deadline ?? undefined,
+          },
+        },
+      });
+    }
+  }, [id, invoiceData, updateInvoiceMutation]);
+
+  const canDelete = Boolean(!invoiceData.finalized && !invoiceData.paid);
 
   return (
-    <YStack flex={1} p="$4" style={styles.container}>
-      <XStack justify="space-between">
-        <H3 size="$3" fontWeight="600" color="black">
-          Invoice #{data.id}
-        </H3>
-        <InvoiceStatus finalized={data.finalized} paid={data.paid} />
-      </XStack>
-      {data.customer_id ? (
-        <Text fontSize="$3" color="black">
-          Customer ID: {data.customer_id}
-        </Text>
-      ) : null}
-      <Text fontSize="$3" color="black">
-        Date: {data.date}
-      </Text>
-      <Text fontSize="$3" color="black">
-        Deadline: {data.deadline}
-      </Text>
-      {data.tax ? (
-        <Text fontSize="$3" color="black">
-          Tax: {formatPriceWithCurrency(data.tax)}
-        </Text>
-      ) : null}
-      {data.total ? (
-        <Text fontSize="$3" color="black">
-          Total: {formatPriceWithCurrency(data.total)}
-        </Text>
-      ) : null}
-    </YStack>
+    <SafeAreaView
+      style={[styles.safeArea, { backgroundColor: theme.background?.val }]}
+      edges={['top']}>
+      <YStack flex={1}>
+        <YStack p="$4" gap="$4">
+          <InvoiceHeader
+            finalized={invoiceData.finalized}
+            paid={invoiceData.paid}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            canDelete={canDelete}
+          />
+          <InvoiceCustomerInfo
+            customer={invoiceData.customer}
+            customerId={invoiceData.customer_id}
+          />
+          <InvoiceDates
+            date={invoiceData.date}
+            deadline={invoiceData.deadline}
+            isOverdue={isOverdue}
+          />
+        </YStack>
+        <Separator />
+        <YStack flex={1}>
+          <InvoiceItemsList invoiceLines={invoiceData.invoice_lines || []} />
+        </YStack>
+        <Separator />
+        <InvoiceTotals tax={invoiceData.tax} total={invoiceData.total} />
+        {!invoiceData.paid ? (
+          <Button
+            onPress={handleChangeStatus}
+            bg="$accent1"
+            color="$accent12"
+            fontWeight="600"
+            mx="$4">
+            {invoiceData.finalized ? 'Set as paid' : 'Finalize invoice'}
+          </Button>
+        ) : null}
+      </YStack>
+    </SafeAreaView>
   );
 };
 
@@ -54,7 +151,9 @@ export const InvoiceScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: 'white',
+  safeArea: {
+    flex: 1,
+    paddingTop: 50,
+    paddingBottom: 16,
   },
 });

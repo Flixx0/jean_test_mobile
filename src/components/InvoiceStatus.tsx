@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Text, XStack } from 'tamagui';
 import { StyleSheet } from 'react-native';
 
@@ -18,19 +19,6 @@ const getStatus = (finalized: boolean, paid: boolean): Status => {
   return 'draft';
 };
 
-const getStatusColor = (status: Status): string => {
-  switch (status) {
-    case 'draft':
-      return 'gray';
-    case 'finalized':
-      return 'blue';
-    case 'paid':
-      return 'green';
-    default:
-      return 'gray';
-  }
-};
-
 const getStatusLabel = (status: Status): string => {
   switch (status) {
     case 'draft':
@@ -46,12 +34,23 @@ const getStatusLabel = (status: Status): string => {
 
 export const InvoiceStatus = ({ finalized, paid }: InvoiceStatusProps) => {
   const status = getStatus(finalized, paid);
-  const color = getStatusColor(status);
   const label = getStatusLabel(status);
 
+  const { bgColor, textColor } = useMemo(() => {
+    switch (status) {
+      case 'paid':
+        return { bgColor: '$green5', textColor: '$green11' };
+      case 'finalized':
+        return { bgColor: '$accent5', textColor: '$accent11' };
+      case 'draft':
+      default:
+        return { bgColor: '$gray5', textColor: '$gray11' };
+    }
+  }, [status]);
+
   return (
-    <XStack style={styles.container}>
-      <Text fontSize="$2" fontWeight="600" color={color as 'gray' | 'blue' | 'green'}>
+    <XStack style={styles.container} bg={bgColor as any} px="$2" py="$1" rounded="$2">
+      <Text fontSize="$2" fontWeight="600" color={textColor as any}>
         {label.toUpperCase()}
       </Text>
     </XStack>

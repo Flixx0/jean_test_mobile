@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { FlatList, StyleSheet } from 'react-native';
+import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { NavigationParams } from '@types';
 import { Button, H1, Spinner, Text, XStack, YStack, useTheme } from '@ui/index';
@@ -16,11 +16,13 @@ const InvoicesList = () => {
   const [bottomSheetOpen, setBottomSheetOpen] = useState(false);
   const theme = useTheme();
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteInvoices({
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } = useInfiniteInvoices({
     filter: JSON.stringify([]),
     perPage: 30,
     sortOption,
   });
+
+  const [refreshing, setRefreshing] = useState(false);
 
   const invoices = data.pages.flatMap((page) => page.invoices);
   const totalCount = data.pages[0]?.pagination?.total_entries ?? 0;
@@ -42,6 +44,15 @@ const InvoicesList = () => {
       fetchNextPage();
     }
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await refetch();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refetch]);
 
   const renderInvoiceItem = useCallback(
     ({ item }: { item: (typeof invoices)[0] }) => (
@@ -83,7 +94,7 @@ const InvoicesList = () => {
             },
           ]}>
           <XStack style={styles.headerContent}>
-            <H1 size="$6" fontWeight="600" color="$color12">
+            <H1 size="$6" fontWeight="600">
               Your invoices
             </H1>
             <Button
@@ -98,16 +109,25 @@ const InvoicesList = () => {
             {totalCount} total invoices
           </Text>
         </YStack>
-
-        <FlatList
-          data={invoices}
-          renderItem={renderInvoiceItem}
-          keyExtractor={(item) => `invoice-${item.id}`}
-          onEndReached={handleLoadMore}
-          onEndReachedThreshold={0.5}
-          ListEmptyComponent={renderEmpty}
-          ListFooterComponent={renderFooter}
-        />
+        <View style={{ backgroundColor: theme.color3?.val }}>
+          <FlatList
+            data={invoices}
+            renderItem={renderInvoiceItem}
+            keyExtractor={(item) => `invoice-${item.id}`}
+            onEndReached={handleLoadMore}
+            onEndReachedThreshold={0.5}
+            ListEmptyComponent={renderEmpty}
+            ListFooterComponent={renderFooter}
+            contentContainerStyle={{ paddingBottom: 100 }}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                tintColor={theme.color12?.val}
+              />
+            }
+          />
+        </View>
 
         <SortInvoicesBottomSheet
           isOpen={bottomSheetOpen}

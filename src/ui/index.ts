@@ -11,6 +11,7 @@ export {
   Input,
   Label,
   Paragraph,
+  Separator,
   Select,
   Sheet,
   Spinner,
