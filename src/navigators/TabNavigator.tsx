@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { EditorScreen } from '@screens/Editor';
+import { EditorStack } from './EditorStack';
 import { HomeStack } from './HomeStack';
 import { useTheme } from '@ui/index';
 import { Icon } from '@components/Icon';
@@ -34,8 +34,8 @@ export const TabNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="Editor"
-        component={EditorScreen}
+        name="EditorStack"
+        component={EditorStack}
         options={{
           title: 'Create',
           tabBarLabel: 'Create',

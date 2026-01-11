@@ -1,15 +1,24 @@
 import { useCallback, useState, useMemo } from 'react';
-import { useForm, useFieldArray, Controller, useWatch } from 'react-hook-form';
+import { useForm, useFieldArray, useWatch } from 'react-hook-form';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { Alert, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import type { NavigationParams } from '@types';
-import { Button, H2, Input, Label, Text, XStack, YStack, useTheme } from '@ui/index';
-import { Icon } from '@components/Icon';
-import { DatePickerInput } from '@components/DatePickerInput';
-import { StatusSelect, type InvoiceStatus } from '@components/StatusSelect';
+import { H2, YStack, useTheme } from '@ui/index';
+import { EditorStatusField } from '@components/EditorStatusField';
+import { EditorCustomerField } from '@components/EditorCustomerField';
+import { EditorDateFields } from '@components/EditorDateFields';
+import { EditorInvoiceLines } from '@components/EditorInvoiceLines';
+import { EditorTotal } from '@components/EditorTotal';
+import { EditorSubmitButton } from '@components/EditorSubmitButton';
 import { useCreateInvoice } from '@queries/useCreateInvoice';
-import type { Paths } from '@api/generated/client';
+import type { Paths, Components } from '@api/generated/client';
+import type { InvoiceStatus } from '@components/StatusSelect';
+
+type EditorStackParams = {
+  Editor: undefined;
+  CustomerSelect: { onSelectCustomer: (customer: Components.Schemas.Customer) => void };
+  ProductSelect: { onSelectProduct: (product: Components.Schemas.Product) => void };
+};
 
 type InvoiceFormData = {
   customer_id: string;
@@ -31,10 +40,16 @@ const formatDateForInput = (date: Date): string => {
 };
 
 export const EditorScreen = () => {
-  const navigation = useNavigation<NavigationProp<NavigationParams>>();
+  const navigation = useNavigation<NavigationProp<EditorStackParams>>();
   const theme = useTheme();
   const createInvoiceMutation = useCreateInvoice();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState<Components.Schemas.Customer | null>(
+    null,
+  );
+  const [selectedProducts, setSelectedProducts] = useState<Map<number, Components.Schemas.Product>>(
+    new Map(),
+  );
 
   const { control, handleSubmit, formState, setValue } = useForm<InvoiceFormData>({
     defaultValues: {
@@ -49,12 +64,26 @@ export const EditorScreen = () => {
 
   const finalized = useWatch({ control, name: 'finalized' });
   const paid = useWatch({ control, name: 'paid' });
+  const invoiceLines = useWatch({ control, name: 'invoice_lines_attributes' });
 
   const currentStatus: InvoiceStatus = useMemo(() => {
     if (paid) return 'paid';
     if (finalized) return 'finalized';
     return 'draft';
   }, [finalized, paid]);
+
+  const totalPrice = useMemo(() => {
+    let total = 0;
+    invoiceLines?.forEach((line, index) => {
+      const product = selectedProducts.get(index);
+      if (product && line.quantity) {
+        const quantity = Number.parseInt(line.quantity, 10) || 0;
+        const unitPrice = Number.parseFloat(product.unit_price) || 0;
+        total += unitPrice * quantity;
+      }
+    });
+    return total;
+  }, [invoiceLines, selectedProducts]);
 
   const handleStatusChange = useCallback(
     (status: InvoiceStatus) => {
@@ -115,20 +144,39 @@ export const EditorScreen = () => {
   );
 
   const addInvoiceLine = useCallback(() => {
-    append({ product_id: '', quantity: '1' });
-  }, [append]);
+    navigation.navigate('ProductSelect', {
+      onSelectProduct: (product: Components.Schemas.Product) => {
+        const newIndex = fields.length;
+        append({ product_id: String(product.id), quantity: '1' });
+        setSelectedProducts((prev) => {
+          const newMap = new Map(prev);
+          newMap.set(newIndex, product);
+          return newMap;
+        });
+      },
+    });
+  }, [append, fields.length, navigation]);
 
   const removeInvoiceLine = useCallback(
     (index: number) => {
       if (fields.length > 1) {
         remove(index);
+        setSelectedProducts((prev) => {
+          const newMap = new Map(prev);
+          newMap.delete(index);
+          // Reindex products after removal
+          const reindexed = new Map<number, Components.Schemas.Product>();
+          Array.from(newMap.entries())
+            .sort(([a], [b]) => a - b)
+            .forEach(([_oldIndex, product], newIndex) => {
+              reindexed.set(newIndex, product);
+            });
+          return reindexed;
+        });
       }
     },
     [fields.length, remove],
   );
-
-  // TODO: Add customer selection with query + add item with query + date picker
-  // TODO: last: move this component to a component to be reusable with edit screen
 
   return (
     <SafeAreaView
@@ -144,165 +192,38 @@ export const EditorScreen = () => {
           <H2 size="$7" fontWeight="600">
             Create Invoice
           </H2>
-          <YStack gap="$1">
-            <Label htmlFor="status" fontSize="$4" color="$color12">
-              Status
-            </Label>
-            <StatusSelect
-              id="status"
-              value={currentStatus}
-              onChange={handleStatusChange}
-              placeholder="Select status"
-            />
-          </YStack>
-          <YStack gap="$1">
-            <Label htmlFor="customer_id" fontSize="$4">
-              Customer ID
-            </Label>
-            <Controller
-              control={control}
-              name="customer_id"
-              rules={{ required: 'Customer ID is required' }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <Input
-                  id="customer_id"
-                  placeholder="Enter customer ID"
-                  keyboardType="number-pad"
-                  value={value}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                />
-              )}
-            />
-            {formState.errors.customer_id && (
-              <Text fontSize="$2" color="red">
-                {formState.errors.customer_id.message}
-              </Text>
-            )}
-          </YStack>
-          <YStack gap="$1">
-            <Label htmlFor="date" fontSize="$4" color="$color12">
-              Date
-            </Label>
-            <Controller
-              control={control}
-              name="date"
-              rules={{ required: 'Date is required' }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <DatePickerInput
-                  id="date"
-                  value={value}
-                  onChange={onChange}
-                  onBlur={onBlur}
-                  placeholder="Select date"
-                />
-              )}
-            />
-            {formState.errors.date && (
-              <Text fontSize="$2" color="red">
-                {formState.errors.date.message}
-              </Text>
-            )}
-          </YStack>
-          <YStack gap="$1">
-            <Label htmlFor="deadline" fontSize="$4" color="$color12">
-              Deadline
-            </Label>
-            <Controller
-              control={control}
-              name="deadline"
-              rules={{ required: 'Deadline is required' }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <DatePickerInput
-                  id="deadline"
-                  value={value}
-                  onChange={onChange}
-                  onBlur={onBlur}
-                  placeholder="Select deadline"
-                />
-              )}
-            />
-            {formState.errors.deadline && (
-              <Text fontSize="$2" color="red">
-                {formState.errors.deadline.message}
-              </Text>
-            )}
-          </YStack>
-          <YStack gap="$1">
-            <XStack style={{ alignItems: 'center', justifyContent: 'space-between' }}>
-              <Label fontSize="$4" color="$color12">
-                Invoice Lines
-              </Label>
-              <Button size="$3" onPress={addInvoiceLine}>
-                <Icon name="Plus" size={16} color={theme.color12?.val} />
-                <Text fontSize="$3" color="$color12" ml="$2">
-                  Add Line
-                </Text>
-              </Button>
-            </XStack>
-
-            {fields.map((field, index) => (
-              <XStack key={field.id} gap="$2" style={{ alignItems: 'flex-end' }}>
-                <YStack flex={1} gap="$2">
-                  <Label fontSize="$3" color="$color11">
-                    Product ID
-                  </Label>
-                  <Controller
-                    control={control}
-                    name={`invoice_lines_attributes.${index}.product_id` as const}
-                    rules={{ required: 'Product ID is required' }}
-                    render={({ field: { onChange, onBlur, value } }) => (
-                      <Input
-                        placeholder="Product ID"
-                        keyboardType="number-pad"
-                        value={value}
-                        onBlur={onBlur}
-                        onChangeText={onChange}
-                      />
-                    )}
-                  />
-                </YStack>
-                <YStack width={100} gap="$2">
-                  <Label fontSize="$3" color="$color11">
-                    Quantity
-                  </Label>
-                  <Controller
-                    control={control}
-                    name={`invoice_lines_attributes.${index}.quantity` as const}
-                    rules={{ required: 'Quantity is required' }}
-                    render={({ field: { onChange, onBlur, value } }) => (
-                      <Input
-                        placeholder="Qty"
-                        keyboardType="number-pad"
-                        value={value}
-                        onBlur={onBlur}
-                        onChangeText={onChange}
-                      />
-                    )}
-                  />
-                </YStack>
-                {fields.length > 1 && (
-                  <Button
-                    size="$3"
-                    circular
-                    onPress={() => removeInvoiceLine(index)}
-                    style={{
-                      backgroundColor: theme.red2?.val,
-                    }}>
-                    <Icon name="X" size={16} color={theme.color12?.val} />
-                  </Button>
-                )}
-              </XStack>
-            ))}
-          </YStack>
+          <EditorStatusField
+            status={currentStatus}
+            onStatusChange={handleStatusChange}
+            errors={formState.errors}
+          />
+          <EditorCustomerField
+            control={control}
+            selectedCustomer={selectedCustomer}
+            onCustomerSelect={setSelectedCustomer}
+            errors={formState.errors}
+          />
+          <EditorDateFields control={control} errors={formState.errors} />
+          <EditorInvoiceLines
+            control={control}
+            fields={fields}
+            selectedProducts={selectedProducts}
+            onAddLine={addInvoiceLine}
+            onRemoveLine={removeInvoiceLine}
+            onProductSelect={(index, product) => {
+              setSelectedProducts((prev) => {
+                const newMap = new Map(prev);
+                newMap.set(index, product);
+                return newMap;
+              });
+            }}
+            errors={formState.errors}
+          />
         </YStack>
       </ScrollView>
-      <YStack p="$4">
-        <Button size="$5" bg="$accent1" onPress={handleSubmit(onSubmit)} disabled={isSubmitting}>
-          <Text fontSize="$5" fontWeight="600" color="$accent11">
-            {isSubmitting ? 'Creating...' : 'Create Invoice'}
-          </Text>
-        </Button>
+      <YStack p="$4" gap="$3">
+        <EditorTotal totalPrice={totalPrice} />
+        <EditorSubmitButton onSubmit={handleSubmit(onSubmit)} isSubmitting={isSubmitting} />
       </YStack>
     </SafeAreaView>
   );
