@@ -21,6 +21,12 @@ const convertSortOptionToApiFormat = (sortOption?: SortOption): string | undefin
       return '-total';
     case 'total-asc':
       return '+total';
+    case 'paid':
+      return '-paid, -finalized';
+    case 'finalized':
+      return '-finalized, +paid';
+    case 'draft':
+      return '+finalized, +paid';
     default:
       return undefined;
   }

@@ -21,7 +21,7 @@ export const useUpdateInvoice = () => {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.invoices.detail(variables.id) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.invoices.infinite(JSON.stringify([])) });
+      queryClient.invalidateQueries({ queryKey: [...queryKeys.invoices.all, 'infinite'] });
     },
   });
 };

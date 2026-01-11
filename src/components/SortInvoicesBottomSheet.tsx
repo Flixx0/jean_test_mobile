@@ -4,7 +4,14 @@ import { Button, H3, Sheet, Text, XStack, YStack, useTheme } from 'tamagui';
 import { Icon } from './Icon';
 import type { IconName } from './Icon';
 
-export type SortOption = 'date-desc' | 'date-asc' | 'total-desc' | 'total-asc';
+export type SortOption =
+  | 'date-desc'
+  | 'date-asc'
+  | 'total-desc'
+  | 'total-asc'
+  | 'paid'
+  | 'finalized'
+  | 'draft';
 
 type SortOptionConfig = {
   value: SortOption;
@@ -32,6 +39,21 @@ const sortOptions: SortOptionConfig[] = [
     value: 'total-asc',
     label: 'Amount',
     icon: 'ChevronUp',
+  },
+  {
+    value: 'paid',
+    label: 'Paid first',
+    icon: 'ChevronDown',
+  },
+  {
+    value: 'finalized',
+    label: 'Finalized first',
+    icon: 'ChevronDown',
+  },
+  {
+    value: 'draft',
+    label: 'Draft first',
+    icon: 'ChevronDown',
   },
 ];
 
