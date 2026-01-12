@@ -1,21 +1,29 @@
 import { useCallback, useState, useMemo } from 'react';
 import { useForm, useFieldArray, useWatch } from 'react-hook-form';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { Alert, ScrollView, StyleSheet } from 'react-native';
+import { NavigationProp, useNavigation, useRoute } from '@react-navigation/native';
+import { ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { H2, YStack, useTheme } from '@ui/index';
+import { H2, YStack, XStack, Button, useTheme } from '@ui/index';
+import { Icon } from '@components/Icon';
 import { EditorStatusField } from '@components/EditorStatusField';
 import { EditorCustomerField } from '@components/EditorCustomerField';
 import { EditorDateFields } from '@components/EditorDateFields';
 import { EditorInvoiceLines } from '@components/EditorInvoiceLines';
 import { EditorTotal } from '@components/EditorTotal';
 import { EditorSubmitButton } from '@components/EditorSubmitButton';
-import { useCreateInvoice } from '@queries/useCreateInvoice';
-import type { Paths, Components } from '@api/generated/client';
+import { useSubmitInvoice } from '@hooks/useSubmitInvoice';
+import { useInvoiceFormInitialization } from '@hooks/useInvoiceFormInitialization';
+import type { Components } from '@api/generated/client';
 import type { InvoiceStatus } from '@components/StatusSelect';
 
 type EditorStackParams = {
   Editor: undefined;
+  CustomerSelect: { onSelectCustomer: (customer: Components.Schemas.Customer) => void };
+  ProductSelect: { onSelectProduct: (product: Components.Schemas.Product) => void };
+};
+
+type HomeStackParams = {
+  EditInvoice: { id: number };
   CustomerSelect: { onSelectCustomer: (customer: Components.Schemas.Customer) => void };
   ProductSelect: { onSelectProduct: (product: Components.Schemas.Product) => void };
 };
@@ -27,6 +35,7 @@ type InvoiceFormData = {
   date: string;
   deadline: string;
   invoice_lines_attributes: {
+    id?: string;
     product_id: string;
     quantity: string;
   }[];
@@ -40,18 +49,25 @@ const formatDateForInput = (date: Date): string => {
 };
 
 export const EditorScreen = () => {
-  const navigation = useNavigation<NavigationProp<EditorStackParams>>();
+  const route = useRoute();
+  const invoiceId = (route.params as { id?: number })?.id;
+  const isEditMode = Boolean(invoiceId);
+
+  const editorNavigation = useNavigation<NavigationProp<EditorStackParams>>();
+  const homeNavigation = useNavigation<NavigationProp<HomeStackParams>>();
+  const navigation = (isEditMode ? homeNavigation : editorNavigation) as any;
+
   const theme = useTheme();
-  const createInvoiceMutation = useCreateInvoice();
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState<Components.Schemas.Customer | null>(
     null,
   );
   const [selectedProducts, setSelectedProducts] = useState<Map<number, Components.Schemas.Product>>(
     new Map(),
   );
+  // Track original invoice line IDs to detect deletions
+  const [originalLineIds, setOriginalLineIds] = useState<Set<number>>(new Set());
 
-  const { control, handleSubmit, formState, setValue } = useForm<InvoiceFormData>({
+  const { control, handleSubmit, formState, setValue, reset } = useForm<InvoiceFormData>({
     defaultValues: {
       customer_id: '',
       finalized: false,
@@ -110,38 +126,21 @@ export const EditorScreen = () => {
     name: 'invoice_lines_attributes',
   });
 
-  const onSubmit = useCallback(
-    async (data: InvoiceFormData) => {
-      setIsSubmitting(true);
-      try {
-        const payload: Paths.PostInvoices.RequestBody = {
-          invoice: {
-            customer_id: Number.parseInt(data.customer_id, 10),
-            finalized: data.finalized,
-            paid: data.paid,
-            date: data.date,
-            deadline: data.deadline,
-            invoice_lines_attributes: data.invoice_lines_attributes.map((line) => ({
-              product_id: Number.parseInt(line.product_id, 10),
-              quantity: line.quantity ? Number.parseInt(line.quantity, 10) : 1,
-            })),
-          },
-        };
+  const { onSubmit, isSubmitting } = useSubmitInvoice({
+    isEditMode,
+    invoiceId,
+    originalLineIds,
+    navigation,
+  });
 
-        const response = await createInvoiceMutation.mutateAsync(payload);
-        if (response?.id) {
-          Alert.alert('Invoice created successfully', `Invoice ID: ${response.id}`);
-        } else {
-          navigation.goBack();
-        }
-      } catch (error) {
-        console.error('Error creating invoice:', error);
-      } finally {
-        setIsSubmitting(false);
-      }
-    },
-    [createInvoiceMutation, navigation],
-  );
+  useInvoiceFormInitialization({
+    isEditMode,
+    invoiceId,
+    reset,
+    setSelectedCustomer,
+    setSelectedProducts,
+    setOriginalLineIds,
+  });
 
   const addInvoiceLine = useCallback(() => {
     navigation.navigate('ProductSelect', {
@@ -178,7 +177,7 @@ export const EditorScreen = () => {
     [fields.length, remove],
   );
 
-  return (
+  const screenContent = (
     <SafeAreaView
       style={[styles.safeArea, { backgroundColor: theme.background?.val }]}
       edges={['top']}>
@@ -189,14 +188,23 @@ export const EditorScreen = () => {
           { backgroundColor: theme.background?.val },
         ]}>
         <YStack gap="$3" p="$4">
-          <H2 size="$7" fontWeight="600">
-            Create Invoice
-          </H2>
-          <EditorStatusField
-            status={currentStatus}
-            onStatusChange={handleStatusChange}
-            errors={formState.errors}
-          />
+          <XStack style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+            <H2 size="$7" fontWeight="600">
+              {isEditMode ? 'Edit Invoice' : 'Create Invoice'}
+            </H2>
+            {isEditMode ? (
+              <Button size="$3" circular onPress={() => navigation.goBack()}>
+                <Icon name="X" size={18} color={theme.color12?.val} />
+              </Button>
+            ) : null}
+          </XStack>
+          {isEditMode ? null : (
+            <EditorStatusField
+              status={currentStatus}
+              onStatusChange={handleStatusChange}
+              errors={formState.errors}
+            />
+          )}
           <EditorCustomerField
             control={control}
             selectedCustomer={selectedCustomer}
@@ -223,10 +231,16 @@ export const EditorScreen = () => {
       </ScrollView>
       <YStack p="$4" gap="$3">
         <EditorTotal totalPrice={totalPrice} />
-        <EditorSubmitButton onSubmit={handleSubmit(onSubmit)} isSubmitting={isSubmitting} />
+        <EditorSubmitButton
+          onSubmit={handleSubmit(onSubmit)}
+          isSubmitting={isSubmitting}
+          isEditMode={isEditMode}
+        />
       </YStack>
     </SafeAreaView>
   );
+
+  return screenContent;
 };
 
 const styles = StyleSheet.create({

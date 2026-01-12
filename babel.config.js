@@ -16,6 +16,7 @@ module.exports = function (api) {
             '@types': './src/types',
             '@ui': './src/ui',
             '@components': './src/components',
+            '@hooks': './src/hooks',
           },
         },
       ],
