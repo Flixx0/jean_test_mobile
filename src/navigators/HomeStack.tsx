@@ -1,11 +1,18 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { HomeScreen } from '@screens/Home';
 import { InvoiceScreen } from '@screens/Invoice';
+import { EditorScreen } from '@screens/Editor';
+import { CustomerSelectScreen } from '@screens/CustomerSelectScreen';
+import { ProductSelectScreen } from '@screens/ProductSelectScreen';
 import { useTheme } from '@ui/index';
+import type { Components } from '@api/generated/client';
 
-type HomeStackParams = {
+export type HomeStackParams = {
   HomeScreen: undefined;
   Invoice: { id: number };
+  EditInvoice: { id: number };
+  CustomerSelect: { onSelectCustomer: (customer: Components.Schemas.Customer) => void };
+  ProductSelect: { onSelectProduct: (product: Components.Schemas.Product) => void };
 };
 
 const Stack = createNativeStackNavigator<HomeStackParams>();
@@ -36,6 +43,38 @@ export const HomeStack = () => {
           },
           headerTintColor: theme.color12?.val,
         })}
+      />
+      <Stack.Screen
+        name="EditInvoice"
+        component={EditorScreen}
+        options={{
+          // TODO work with fullScreenModal and tamagui bottom sheet ( currently not working )
+          // presentation: 'fullScreenModal',
+          headerShown: false,
+          gestureEnabled: true,
+          animation: 'slide_from_bottom',
+          animationDuration: 300,
+        }}
+      />
+      <Stack.Screen
+        name="CustomerSelect"
+        component={CustomerSelectScreen}
+        options={{
+          presentation: 'fullScreenModal',
+          headerShown: false,
+          gestureEnabled: true,
+          animation: 'slide_from_bottom',
+        }}
+      />
+      <Stack.Screen
+        name="ProductSelect"
+        component={ProductSelectScreen}
+        options={{
+          presentation: 'fullScreenModal',
+          headerShown: false,
+          gestureEnabled: true,
+          animation: 'slide_from_bottom',
+        }}
       />
     </Stack.Navigator>
   );

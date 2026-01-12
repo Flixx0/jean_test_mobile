@@ -91,6 +91,7 @@ export const DatePickerInput = ({
       {Platform.OS === 'ios' && (
         <Sheet
           modal
+          native
           open={showPicker}
           snapPointsMode="fit"
           onOpenChange={(open: boolean) => {

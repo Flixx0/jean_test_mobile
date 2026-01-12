@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react';
 import { Alert, StyleSheet } from 'react-native';
 import { RouteProp, useRoute, useNavigation, NavigationProp } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { NavigationParams } from '@types';
+import type { HomeStackParams } from '@navigators/HomeStack';
 import { YStack, useTheme, Separator, Button } from '@ui/index';
 import { InvoiceHeader } from '@components/InvoiceHeader';
 import { InvoiceCustomerInfo } from '@components/InvoiceCustomerInfo';
@@ -22,7 +22,7 @@ type InvoiceWithCustomer = Components.Schemas.Invoice & {
 };
 
 const InvoiceData = ({ id }: { id: number }) => {
-  const navigation = useNavigation<NavigationProp<NavigationParams>>();
+  const navigation = useNavigation<NavigationProp<HomeStackParams>>();
   const theme = useTheme();
   const { data } = useInvoice(id);
   const invoiceData = data as InvoiceWithCustomer;
@@ -36,9 +36,8 @@ const InvoiceData = ({ id }: { id: number }) => {
   );
 
   const handleEdit = useCallback(() => {
-    // TODO: Navigate to editor with invoice data
-    navigation.navigate('Editor');
-  }, [navigation]);
+    navigation.navigate('EditInvoice', { id });
+  }, [navigation, id]);
 
   const handleDelete = useCallback(() => {
     Alert.alert('Delete Invoice', 'Are you sure you want to delete this invoice?', [
@@ -125,7 +124,7 @@ const InvoiceData = ({ id }: { id: number }) => {
         </YStack>
         <Separator />
         <InvoiceTotals tax={invoiceData.tax} total={invoiceData.total} />
-        {!invoiceData.paid ? (
+        {invoiceData.paid ? null : (
           <Button
             onPress={handleChangeStatus}
             bg="$accent1"
@@ -134,14 +133,14 @@ const InvoiceData = ({ id }: { id: number }) => {
             mx="$4">
             {invoiceData.finalized ? 'Set as paid' : 'Finalize invoice'}
           </Button>
-        ) : null}
+        )}
       </YStack>
     </SafeAreaView>
   );
 };
 
 export const InvoiceScreen = () => {
-  const { id } = useRoute<RouteProp<NavigationParams, 'Invoice'>>().params;
+  const { id } = useRoute<RouteProp<HomeStackParams, 'Invoice'>>().params;
 
   return (
     <WithSuspense>

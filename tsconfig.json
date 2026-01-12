@@ -13,7 +13,8 @@
       "@types": ["src/types"],
       "@types/*": ["src/types/*"],
       "@ui/*": ["src/ui/*"],
-      "@components/*": ["src/components/*"]
+      "@components/*": ["src/components/*"],
+      "@hooks/*": ["src/hooks/*"]
     }
   }
 }
