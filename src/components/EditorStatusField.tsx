@@ -1,18 +1,7 @@
 import { Control, FieldErrors } from 'react-hook-form';
 import { Label, YStack } from '@ui/index';
 import { StatusSelect, type InvoiceStatus } from '@components/StatusSelect';
-
-type InvoiceFormData = {
-  customer_id: string;
-  finalized: boolean;
-  paid: boolean;
-  date: string;
-  deadline: string;
-  invoice_lines_attributes: {
-    product_id: string;
-    quantity: string;
-  }[];
-};
+import type { InvoiceFormData } from '@components/EditorInvoiceLines';
 
 type EditorStatusFieldProps = {
   status: InvoiceStatus;

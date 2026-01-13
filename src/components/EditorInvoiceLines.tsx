@@ -16,6 +16,14 @@ export type InvoiceFormData = {
   }[];
 };
 
+export type InvoiceFormDataWithIds = Omit<InvoiceFormData, 'invoice_lines_attributes'> & {
+  invoice_lines_attributes: {
+    id?: string;
+    product_id: string;
+    quantity: string;
+  }[];
+};
+
 type EditorInvoiceLinesProps = {
   control: Control<InvoiceFormData>;
   fields: UseFieldArrayReturn<InvoiceFormData, 'invoice_lines_attributes'>['fields'];

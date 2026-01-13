@@ -3,6 +3,7 @@ import { EditorCustomerField } from '@components/EditorCustomerField';
 import { withSpecWrapper } from '../specs/wrapper';
 import { useForm } from 'react-hook-form';
 import type { Components } from '@api/generated/client';
+import type { InvoiceFormData } from '@components/EditorInvoiceLines';
 
 jest.mock('@react-navigation/native', () => ({
   ...jest.requireActual('@react-navigation/native'),
@@ -11,18 +12,6 @@ jest.mock('@react-navigation/native', () => ({
     goBack: jest.fn(),
   }),
 }));
-
-type InvoiceFormData = {
-  customer_id: string;
-  finalized: boolean;
-  paid: boolean;
-  date: string;
-  deadline: string;
-  invoice_lines_attributes: {
-    product_id: string;
-    quantity: string;
-  }[];
-};
 
 const mockCustomer: Components.Schemas.Customer = {
   id: 1,

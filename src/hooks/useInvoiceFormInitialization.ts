@@ -2,19 +2,7 @@ import { useEffect } from 'react';
 import { UseFormReset } from 'react-hook-form';
 import { useInvoiceOptional } from '@queries/useInvoice';
 import type { Components } from '@api/generated/client';
-
-type InvoiceFormData = {
-  customer_id: string;
-  finalized: boolean;
-  paid: boolean;
-  date: string;
-  deadline: string;
-  invoice_lines_attributes: {
-    id?: string;
-    product_id: string;
-    quantity: string;
-  }[];
-};
+import type { InvoiceFormDataWithIds } from '@components/EditorInvoiceLines';
 
 const formatDateForInput = (date: Date): string => {
   const year = date.getFullYear();
@@ -26,7 +14,7 @@ const formatDateForInput = (date: Date): string => {
 type UseInvoiceFormInitializationParams = {
   isEditMode: boolean;
   invoiceId?: number;
-  reset: UseFormReset<InvoiceFormData>;
+  reset: UseFormReset<InvoiceFormDataWithIds>;
   setSelectedCustomer: (customer: Components.Schemas.Customer | null) => void;
   setSelectedProducts: React.Dispatch<
     React.SetStateAction<Map<number, Components.Schemas.Product>>

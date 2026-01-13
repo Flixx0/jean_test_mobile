@@ -3,14 +3,9 @@ import { RouteProp, useRoute, useNavigation, NavigationProp } from '@react-navig
 import { CustomersList } from '@components/CustomersList';
 import { SelectScreen } from '@components/SelectScreen';
 import type { Components } from '@api/generated/client';
+import type { EditorStackParams } from '@navigators/EditorStack';
 
 type Customer = Components.Schemas.Customer;
-
-type EditorStackParams = {
-  Editor: undefined;
-  CustomerSelect: { onSelectCustomer: (customer: Customer) => void };
-  ProductSelect: { onSelectProduct: (product: Components.Schemas.Product) => void };
-};
 
 export const CustomerSelectScreen = () => {
   const route = useRoute<RouteProp<EditorStackParams, 'CustomerSelect'>>();

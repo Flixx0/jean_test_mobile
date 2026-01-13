@@ -4,19 +4,7 @@ import { NavigationProp } from '@react-navigation/native';
 import { useCreateInvoice } from '@queries/useCreateInvoice';
 import { useUpdateInvoice } from '@queries/useUpdateInvoice';
 import type { Paths } from '@api/generated/client';
-
-type InvoiceFormData = {
-  customer_id: string;
-  finalized: boolean;
-  paid: boolean;
-  date: string;
-  deadline: string;
-  invoice_lines_attributes: {
-    id?: string;
-    product_id: string;
-    quantity: string;
-  }[];
-};
+import type { InvoiceFormData, InvoiceFormDataWithIds } from '@components/EditorInvoiceLines';
 
 type UseSubmitInvoiceParams = {
   isEditMode: boolean;
@@ -36,7 +24,7 @@ export const useSubmitInvoice = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onSubmit = useCallback(
-    async (data: InvoiceFormData) => {
+    async (data: InvoiceFormDataWithIds) => {
       setIsSubmitting(true);
       try {
         if (isEditMode && invoiceId) {

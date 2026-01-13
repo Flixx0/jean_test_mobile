@@ -15,31 +15,9 @@ import { useSubmitInvoice } from '@hooks/useSubmitInvoice';
 import { useInvoiceFormInitialization } from '@hooks/useInvoiceFormInitialization';
 import type { Components } from '@api/generated/client';
 import type { InvoiceStatus } from '@components/StatusSelect';
-
-type EditorStackParams = {
-  Editor: undefined;
-  CustomerSelect: { onSelectCustomer: (customer: Components.Schemas.Customer) => void };
-  ProductSelect: { onSelectProduct: (product: Components.Schemas.Product) => void };
-};
-
-type HomeStackParams = {
-  EditInvoice: { id: number };
-  CustomerSelect: { onSelectCustomer: (customer: Components.Schemas.Customer) => void };
-  ProductSelect: { onSelectProduct: (product: Components.Schemas.Product) => void };
-};
-
-type InvoiceFormData = {
-  customer_id: string;
-  finalized: boolean;
-  paid: boolean;
-  date: string;
-  deadline: string;
-  invoice_lines_attributes: {
-    id?: string;
-    product_id: string;
-    quantity: string;
-  }[];
-};
+import type { EditorStackParams } from '@navigators/EditorStack';
+import type { HomeStackParams } from '@navigators/HomeStack';
+import type { InvoiceFormData, InvoiceFormDataWithIds } from '@components/EditorInvoiceLines';
 
 const formatDateForInput = (date: Date): string => {
   const year = date.getFullYear();

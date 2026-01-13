@@ -2,18 +2,7 @@ import { render, screen } from '@testing-library/react-native';
 import { EditorDateFields } from '@components/EditorDateFields';
 import { withSpecWrapper } from '../specs/wrapper';
 import { useForm } from 'react-hook-form';
-
-type InvoiceFormData = {
-  customer_id: string;
-  finalized: boolean;
-  paid: boolean;
-  date: string;
-  deadline: string;
-  invoice_lines_attributes: {
-    product_id: string;
-    quantity: string;
-  }[];
-};
+import type { InvoiceFormData } from '@components/EditorInvoiceLines';
 
 const TestComponent = ({ errors }: { errors?: any }) => {
   const { control } = useForm<InvoiceFormData>({

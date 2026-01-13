@@ -1,18 +1,7 @@
 import { Controller, Control, FieldErrors } from 'react-hook-form';
 import { Label, Text, XStack, YStack } from '@ui/index';
 import { DatePickerInput } from '@components/DatePickerInput';
-
-type InvoiceFormData = {
-  customer_id: string;
-  finalized: boolean;
-  paid: boolean;
-  date: string;
-  deadline: string;
-  invoice_lines_attributes: {
-    product_id: string;
-    quantity: string;
-  }[];
-};
+import type { InvoiceFormData } from '@components/EditorInvoiceLines';
 
 type EditorDateFieldsProps = {
   control: Control<InvoiceFormData>;

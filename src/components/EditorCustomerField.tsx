@@ -3,24 +3,8 @@ import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { Button, Label, Text, XStack, YStack, useTheme } from '@ui/index';
 import { Icon } from '@components/Icon';
 import type { Components } from '@api/generated/client';
-
-type EditorStackParams = {
-  Editor: undefined;
-  CustomerSelect: { onSelectCustomer: (customer: Components.Schemas.Customer) => void };
-  ProductSelect: { onSelectProduct: (product: Components.Schemas.Product) => void };
-};
-
-type InvoiceFormData = {
-  customer_id: string;
-  finalized: boolean;
-  paid: boolean;
-  date: string;
-  deadline: string;
-  invoice_lines_attributes: {
-    product_id: string;
-    quantity: string;
-  }[];
-};
+import type { EditorStackParams } from '@navigators/EditorStack';
+import type { InvoiceFormData } from '@components/EditorInvoiceLines';
 
 type EditorCustomerFieldProps = {
   control: Control<InvoiceFormData>;

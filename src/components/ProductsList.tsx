@@ -4,14 +4,9 @@ import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { Text, XStack, YStack, useTheme } from '@ui/index';
 import { useInfiniteProducts } from '@queries/useInfiniteProducts';
 import type { Components } from '@api/generated/client';
+import type { EditorStackParams } from '@navigators/EditorStack';
 
 type Product = Components.Schemas.Product;
-
-type EditorStackParams = {
-  Editor: undefined;
-  CustomerSelect: { onSelectCustomer: (customer: Components.Schemas.Customer) => void };
-  ProductSelect: { onSelectProduct: (product: Product) => void };
-};
 
 type ProductsListProps = {
   searchQuery: string;
