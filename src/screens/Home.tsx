@@ -1,31 +1,55 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import type { NavigationParams } from '@types';
-import { Button, H1, Spinner, Text, XStack, YStack, useTheme } from '@ui/index';
+import type { NavigationParams } from '../types/index';
+import { Button, H1, Input, Spinner, Text, XStack, YStack, useTheme } from '@ui/index';
 import { Icon } from '@components/Icon';
 import { InvoiceCard } from '@components/InvoiceCard';
 import { SortInvoicesBottomSheet, type SortOption } from '@components/SortInvoicesBottomSheet';
 import { useInfiniteInvoices } from '@queries/useInfiniteInvoices';
-import { WithSuspense } from '@utils/withSuspense';
 
-const InvoicesList = () => {
+export const HomeScreen = () => {
   const { navigate } = useNavigation<NavigationProp<NavigationParams>>();
   const [sortOption, setSortOption] = useState<SortOption>('date-desc');
   const [bottomSheetOpen, setBottomSheetOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const theme = useTheme();
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } = useInfiniteInvoices({
-    filter: JSON.stringify([]),
-    perPage: 30,
-    sortOption,
-  });
+  const DEBOUNCE_DELAY = 300;
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, DEBOUNCE_DELAY);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [searchQuery]);
+
+  const buildFilter = useCallback((customerName: string): string => {
+    if (!customerName.trim()) {
+      return JSON.stringify([]);
+    }
+
+    return JSON.stringify([{ field: 'customer.first_name', operator: 'eq', value: customerName }]);
+  }, []);
+
+  const filter = buildFilter(debouncedSearchQuery);
+
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, refetch, isLoading, isFetching } =
+    useInfiniteInvoices({
+      filter,
+      perPage: 30,
+      sortOption,
+    });
 
   const [refreshing, setRefreshing] = useState(false);
 
-  const invoices = data.pages.flatMap((page) => page.invoices);
-  const totalCount = data.pages[0]?.pagination?.total_entries ?? 0;
+  const invoices = data?.pages.flatMap((page) => page.invoices) ?? [];
+  const totalCount = data?.pages[0]?.pagination?.total_entries ?? 0;
 
   const handleOpenFilter = useCallback(() => {
     setBottomSheetOpen(true);
@@ -72,13 +96,21 @@ const InvoicesList = () => {
   }, [isFetchingNextPage]);
 
   const renderEmpty = useCallback(() => {
+    if (isLoading) {
+      return (
+        <YStack flex={1} style={styles.centerContent}>
+          <Spinner size="large" />
+        </YStack>
+      );
+    }
+
     return (
       <YStack flex={1} style={styles.centerContent} gap="$4">
         <Text color="$color12">No invoices found.</Text>
         <Button onPress={() => navigate('Editor')}>Create a new invoice</Button>
       </YStack>
     );
-  }, [navigate]);
+  }, [navigate, isLoading]);
 
   return (
     <SafeAreaView
@@ -92,7 +124,8 @@ const InvoicesList = () => {
               backgroundColor: theme.background?.val,
               borderBottomColor: theme.borderColor?.val,
             },
-          ]}>
+          ]}
+          gap="$2">
           <XStack style={styles.headerContent}>
             <H1 size="$6" fontWeight="600">
               Your invoices
@@ -105,28 +138,43 @@ const InvoicesList = () => {
               <Icon name="ArrowDownUp" size={16} color={theme.color12?.val} />
             </Button>
           </XStack>
+          <Input
+            testID="home-search-input"
+            placeholder="Search by customer first name..."
+            value={searchQuery}
+            onChangeText={(e) => {
+              const text = typeof e === 'string' ? e : e.nativeEvent.text;
+              setSearchQuery(text);
+            }}
+          />
           <Text fontSize="$3" color="$color11">
             {totalCount} total invoices
           </Text>
         </YStack>
-        <View style={{ backgroundColor: theme.color3?.val }}>
-          <FlatList
-            data={invoices}
-            renderItem={renderInvoiceItem}
-            keyExtractor={(item) => `invoice-${item.id}`}
-            onEndReached={handleLoadMore}
-            onEndReachedThreshold={0.5}
-            ListEmptyComponent={renderEmpty}
-            ListFooterComponent={renderFooter}
-            contentContainerStyle={{ paddingBottom: 100 }}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={onRefresh}
-                tintColor={theme.color12?.val}
-              />
-            }
-          />
+        <View style={{ backgroundColor: theme.color3?.val, flex: 1 }}>
+          {isLoading && !data ? (
+            <YStack flex={1} style={styles.centerContent}>
+              <Spinner size="large" />
+            </YStack>
+          ) : (
+            <FlatList
+              data={invoices}
+              renderItem={renderInvoiceItem}
+              keyExtractor={(item) => `invoice-${item.id}`}
+              onEndReached={handleLoadMore}
+              onEndReachedThreshold={0.5}
+              ListEmptyComponent={renderEmpty}
+              ListFooterComponent={renderFooter}
+              contentContainerStyle={{ paddingBottom: 100, flexGrow: 1 }}
+              refreshControl={
+                <RefreshControl
+                  refreshing={refreshing || (isFetching && !isFetchingNextPage)}
+                  onRefresh={onRefresh}
+                  tintColor={theme.color12?.val}
+                />
+              }
+            />
+          )}
         </View>
 
         <SortInvoicesBottomSheet
@@ -137,14 +185,6 @@ const InvoicesList = () => {
         />
       </YStack>
     </SafeAreaView>
-  );
-};
-
-export const HomeScreen = () => {
-  return (
-    <WithSuspense>
-      <InvoicesList />
-    </WithSuspense>
   );
 };
 

@@ -1,4 +1,4 @@
-import { useSuspenseInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { useApi } from '@api/index';
 import { queryKeys } from '@queries/queryKeys';
 import type { SortOption } from '@components/SortInvoicesBottomSheet';
@@ -32,33 +32,38 @@ const convertSortOptionToApiFormat = (sortOption?: SortOption): string | undefin
   }
 };
 
-/**
- * Hook to fetch the list of invoices with infinite scroll
- */
-export const useInfiniteInvoices = (params: UseInfiniteInvoicesParams = {}) => {
-  const api = useApi();
+const createQueryConfig = (api: ReturnType<typeof useApi>, params: UseInfiniteInvoicesParams) => {
   const { filter = JSON.stringify([]), perPage = 50, sortOption } = params;
   const sort = convertSortOptionToApiFormat(sortOption);
 
-  return useSuspenseInfiniteQuery({
+  return {
     queryKey: queryKeys.invoices.infinite(filter, perPage, sortOption),
-    queryFn: async ({ pageParam = 1 }) => {
-      const params: any = {
+    queryFn: async ({ pageParam = 1 }: { pageParam: number }) => {
+      const queryParams: any = {
         page: pageParam,
         per_page: perPage,
         filter,
       };
       if (sort) {
-        params.sort = sort;
+        queryParams.sort = sort;
       }
-      const response = await api.getInvoices(params);
+      const response = await api.getInvoices(queryParams);
       return response.data;
     },
-    getNextPageParam: (lastPage) => {
+    getNextPageParam: (lastPage: any) => {
       const { pagination } = lastPage;
       const nextPage = pagination.page + 1;
       return nextPage <= pagination.total_pages ? nextPage : undefined;
     },
-    initialPageParam: 1,
-  });
+    initialPageParam: 1 as number,
+  };
+};
+
+/**
+ * Hook to fetch the list of invoices with infinite scroll
+ */
+export const useInfiniteInvoices = (params: UseInfiniteInvoicesParams = {}) => {
+  const api = useApi();
+  const queryConfig = createQueryConfig(api, params);
+  return useInfiniteQuery(queryConfig);
 };

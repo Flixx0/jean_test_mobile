@@ -2,7 +2,6 @@ import { render, screen } from '@testing-library/react-native';
 import { HomeScreen } from '@screens/Home';
 import { withSpecWrapper } from '../specs/wrapper';
 import type { Components } from '@api/generated/client';
-import { useInfiniteInvoices } from '@queries/useInfiniteInvoices';
 
 jest.mock('@react-navigation/native', () => ({
   ...jest.requireActual('@react-navigation/native'),
@@ -45,6 +44,8 @@ jest.mock('@queries/useInfiniteInvoices', () => ({
     hasNextPage: false,
     isFetchingNextPage: false,
     refetch: jest.fn(),
+    isLoading: false,
+    isFetching: false,
   })),
 }));
 
@@ -53,6 +54,13 @@ describe('Home', () => {
     render(withSpecWrapper(<HomeScreen />));
 
     expect(screen.getByText('Your invoices')).toBeTruthy();
+  });
+
+  it('displays search input', () => {
+    render(withSpecWrapper(<HomeScreen />));
+
+    expect(screen.getByTestId('home-search-input')).toBeTruthy();
+    expect(screen.getByPlaceholderText('Search by customer first name...')).toBeTruthy();
   });
 
   it('displays total invoices count', () => {
@@ -68,6 +76,7 @@ describe('Home', () => {
   });
 
   it('displays empty state when no invoices', () => {
+    const { useInfiniteInvoices } = require('@queries/useInfiniteInvoices');
     (useInfiniteInvoices as jest.Mock).mockReturnValueOnce({
       data: {
         pages: [
@@ -85,6 +94,8 @@ describe('Home', () => {
       hasNextPage: false,
       isFetchingNextPage: false,
       refetch: jest.fn(),
+      isLoading: false,
+      isFetching: false,
     });
 
     render(withSpecWrapper(<HomeScreen />));
