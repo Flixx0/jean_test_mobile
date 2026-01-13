@@ -108,6 +108,7 @@ export const CustomersList = ({
 
   return (
     <FlatList
+      testID="customers-list"
       data={customers}
       renderItem={renderCustomerItem}
       keyExtractor={(item) => `customer-${item.id}`}

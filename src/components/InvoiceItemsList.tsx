@@ -19,8 +19,9 @@ export const InvoiceItemsList = ({ invoiceLines }: InvoiceItemsListProps) => {
   );
 
   return (
-    <YStack flex={1}>
+    <YStack testID="invoice-items-list" flex={1}>
       <XStack
+        testID="invoice-items-list-header"
         p="$4"
         style={{
           justifyContent: 'space-between',
@@ -29,15 +30,16 @@ export const InvoiceItemsList = ({ invoiceLines }: InvoiceItemsListProps) => {
           borderBottomWidth: 1,
           borderBottomColor: theme.borderColor?.val,
         }}>
-        <Text fontSize="$4" fontWeight="600" color="$color12">
+        <Text testID="invoice-items-list-title" fontSize="$4" fontWeight="600" color="$color12">
           Invoice items
         </Text>
-        <Text fontSize="$3" color="$color11">
+        <Text testID="invoice-items-list-count" fontSize="$3" color="$color11">
           {invoiceLines.length} {invoiceLines.length === 1 ? 'item' : 'items'}
         </Text>
       </XStack>
       {invoiceLines.length > 0 ? (
         <FlatList
+          testID="invoice-items-list-flatlist"
           data={invoiceLines}
           renderItem={renderInvoiceLine}
           keyExtractor={(item) => `invoice-line-${item.id}`}
@@ -46,9 +48,10 @@ export const InvoiceItemsList = ({ invoiceLines }: InvoiceItemsListProps) => {
         />
       ) : (
         <YStack
+          testID="invoice-items-list-empty"
           flex={1}
           style={[styles.emptyContainer, { alignItems: 'center', justifyContent: 'center' }]}>
-          <Text fontSize="$3" color="$color11">
+          <Text testID="invoice-items-list-empty-text" fontSize="$3" color="$color11">
             No items in this invoice
           </Text>
         </YStack>

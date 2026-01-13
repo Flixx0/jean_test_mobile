@@ -55,11 +55,13 @@ export const StatusSelect = ({
 
   return (
     <>
-      <Pressable onPress={handlePress}>
+      <Pressable testID="status-select-pressable" onPress={handlePress}>
         <XStack
+          testID="status-select-container"
           width="100%"
           style={{ position: 'relative', alignItems: 'center', justifyContent: 'space-between' }}>
           <Input
+            testID="status-select-input"
             id={id}
             placeholder={placeholder}
             value={displayValue}
@@ -105,7 +107,7 @@ export const StatusSelect = ({
         />
         <Sheet.Frame p="$4" bg="$background" borderTopLeftRadius="$4" borderTopRightRadius="$4">
           <YStack gap="$4">
-            <H3 size="$5" fontWeight="600" color="$color12">
+            <H3 testID="status-select-sheet-title" size="$5" fontWeight="600" color="$color12">
               Invoice Status
             </H3>
             <YStack gap="$2">
@@ -116,12 +118,16 @@ export const StatusSelect = ({
                 return (
                   <Button
                     key={option.value}
+                    testID={`status-select-option-${option.value}`}
                     onPress={() => handleStatusChange(option.value)}
                     bg={isSelected ? theme.blue2?.val : theme.backgroundHover?.val}
                     borderColor={isSelected ? theme.blue10?.val : 'transparent'}
                     borderWidth={1}>
                     <XStack style={styles.statusOptionContent} gap="$2">
-                      <Text fontSize="$4" color={textColor}>
+                      <Text
+                        testID={`status-select-option-label-${option.value}`}
+                        fontSize="$4"
+                        color={textColor}>
                         {option.label}
                       </Text>
                     </XStack>

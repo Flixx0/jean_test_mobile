@@ -10,25 +10,37 @@ export const InvoiceTotals = ({ tax, total }: InvoiceTotalsProps) => {
   const theme = useTheme();
 
   return (
-    <YStack p="$4" gap="$2" style={{ backgroundColor: theme.background?.val }}>
+    <YStack
+      testID="invoice-totals"
+      p="$4"
+      gap="$2"
+      style={{ backgroundColor: theme.background?.val }}>
       {tax ? (
-        <XStack style={{ justifyContent: 'space-between' }}>
-          <Text fontSize="$3" color="$color11">
+        <XStack testID="invoice-totals-tax-row" style={{ justifyContent: 'space-between' }}>
+          <Text testID="invoice-totals-tax-label" fontSize="$3" color="$color11">
             Tax
           </Text>
-          <Text fontSize="$4" color="$color12" fontWeight="500">
+          <Text testID="invoice-totals-tax-value" fontSize="$4" color="$color12" fontWeight="500">
             {formatPriceWithCurrency(tax)}
           </Text>
         </XStack>
       ) : null}
       {total ? (
         <>
-          <Separator />
-          <XStack style={{ justifyContent: 'space-between' }}>
-            <Text fontSize="$4" fontWeight="600" color="$color12">
+          <Separator testID="invoice-totals-separator" />
+          <XStack testID="invoice-totals-total-row" style={{ justifyContent: 'space-between' }}>
+            <Text
+              testID="invoice-totals-total-label"
+              fontSize="$4"
+              fontWeight="600"
+              color="$color12">
               Total
             </Text>
-            <Text fontSize="$5" fontWeight="700" color="$color12">
+            <Text
+              testID="invoice-totals-total-value"
+              fontSize="$5"
+              fontWeight="700"
+              color="$color12">
               {formatPriceWithCurrency(total)}
             </Text>
           </XStack>

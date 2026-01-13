@@ -18,11 +18,14 @@ export const InvoiceHeader = ({
   canDelete,
 }: InvoiceHeaderProps) => {
   return (
-    <XStack style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+    <XStack
+      testID="invoice-header"
+      style={{ justifyContent: 'space-between', alignItems: 'center' }}>
       <InvoiceStatus finalized={finalized} paid={paid} />
       <XStack gap="$2">
         {!paid && !finalized ? (
           <Button
+            testID="invoice-header-edit-button"
             size="$3"
             circular
             onPress={onEdit}
@@ -37,6 +40,7 @@ export const InvoiceHeader = ({
         ) : null}
         {canDelete ? (
           <Button
+            testID="invoice-header-delete-button"
             size="$3"
             circular
             onPress={onDelete}

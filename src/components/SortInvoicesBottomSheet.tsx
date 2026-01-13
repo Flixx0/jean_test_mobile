@@ -102,7 +102,7 @@ export const SortInvoicesBottomSheet = ({
       />
       <Sheet.Frame p="$4" bg="$background" borderTopLeftRadius="$4" borderTopRightRadius="$4">
         <YStack gap="$4">
-          <H3 size="$5" fontWeight="600" color="$color12">
+          <H3 testID="sort-invoices-bottom-sheet-title" size="$5" fontWeight="600" color="$color12">
             Sort invoices by
           </H3>
           <YStack gap="$2">
@@ -113,12 +113,16 @@ export const SortInvoicesBottomSheet = ({
               return (
                 <Button
                   key={option.value}
+                  testID={`sort-invoices-option-${option.value}`}
                   onPress={() => handleSortChange(option.value)}
                   bg={isSelected ? theme.blue2?.val : theme.backgroundHover?.val}
                   borderColor={isSelected ? theme.blue10?.val : 'transparent'}
                   borderWidth={1}>
                   <XStack style={styles.sortOptionContent} gap="$2">
-                    <Text fontSize="$4" color={textColor}>
+                    <Text
+                      testID={`sort-invoices-option-label-${option.value}`}
+                      fontSize="$4"
+                      color={textColor}>
                       {option.label}
                     </Text>
                     <Icon name={option.icon} size={18} color={textColor} />

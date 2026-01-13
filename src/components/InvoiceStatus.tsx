@@ -49,8 +49,14 @@ export const InvoiceStatus = ({ finalized, paid }: InvoiceStatusProps) => {
   }, [status]);
 
   return (
-    <XStack style={styles.container} bg={bgColor as any} px="$2" py="$1" rounded="$2">
-      <Text fontSize="$2" fontWeight="600" color={textColor as any}>
+    <XStack
+      testID="invoice-status"
+      style={styles.container}
+      bg={bgColor as any}
+      px="$2"
+      py="$1"
+      rounded="$2">
+      <Text testID="invoice-status-label" fontSize="$2" fontWeight="600" color={textColor as any}>
         {label.toUpperCase()}
       </Text>
     </XStack>

@@ -4,7 +4,7 @@ import { Icon } from '@components/Icon';
 import { EditorInvoiceLineItem } from '@components/EditorInvoiceLineItem';
 import type { Components } from '@api/generated/client';
 
-type InvoiceFormData = {
+export type InvoiceFormData = {
   customer_id: string;
   finalized: boolean;
   paid: boolean;
@@ -38,14 +38,20 @@ export const EditorInvoiceLines = ({
   const theme = useTheme();
 
   return (
-    <YStack gap="$3">
-      <XStack style={{ alignItems: 'center', justifyContent: 'space-between' }}>
-        <Label fontSize="$4" color="$color12">
+    <YStack testID="editor-invoice-lines" gap="$3">
+      <XStack
+        testID="editor-invoice-lines-header"
+        style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+        <Label testID="editor-invoice-lines-label" fontSize="$4" color="$color12">
           Invoice Lines
         </Label>
-        <Button size="$3" onPress={onAddLine}>
+        <Button testID="editor-invoice-lines-add-button" size="$3" onPress={onAddLine}>
           <Icon name="Plus" size={16} color={theme.color12?.val} />
-          <Text fontSize="$3" color="$color12" ml="$2">
+          <Text
+            testID="editor-invoice-lines-add-button-text"
+            fontSize="$3"
+            color="$color12"
+            ml="$2">
             Add Line
           </Text>
         </Button>

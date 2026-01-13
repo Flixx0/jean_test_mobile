@@ -47,7 +47,7 @@ export const EditorInvoiceLineItem = ({
   const theme = useTheme();
 
   return (
-    <YStack key={field.id} gap="$2">
+    <YStack testID={`editor-invoice-line-item-${index}`} key={field.id} gap="$2">
       <XStack key={field.id} gap="$2" style={{ alignItems: 'center' }}>
         <YStack flex={1} gap="$2">
           <Controller
@@ -56,6 +56,7 @@ export const EditorInvoiceLineItem = ({
             rules={{ required: 'Product is required' }}
             render={({ field: { onChange, onBlur, value } }) => (
               <Button
+                testID={`editor-invoice-line-item-product-button-${index}`}
                 onPress={() => {
                   navigation.navigate('ProductSelect', {
                     onSelectProduct: (selectedProduct: Components.Schemas.Product) => {
@@ -67,11 +68,17 @@ export const EditorInvoiceLineItem = ({
                 }}
                 style={{ justifyContent: 'flex-start' }}>
                 <XStack flex={1} justify="space-between" style={{ alignItems: 'center' }}>
-                  <Text fontSize="$4" color={product ? '$color12' : '$color11'}>
+                  <Text
+                    testID={`editor-invoice-line-item-product-text-${index}`}
+                    fontSize="$4"
+                    color={product ? '$color12' : '$color11'}>
                     {product ? product.label : 'Select a product'}
                   </Text>
                   {product ? (
-                    <Text fontSize="$2" color="$accent4">
+                    <Text
+                      testID={`editor-invoice-line-item-product-price-${index}`}
+                      fontSize="$2"
+                      color="$accent4">
                       {product.unit_price} €
                     </Text>
                   ) : null}
@@ -90,6 +97,7 @@ export const EditorInvoiceLineItem = ({
             }}
             render={({ field: { onChange, onBlur, value } }) => (
               <Input
+                testID={`editor-invoice-line-item-quantity-${index}`}
                 placeholder="Qty"
                 keyboardType="number-pad"
                 value={value}
@@ -101,6 +109,7 @@ export const EditorInvoiceLineItem = ({
         </YStack>
         {fieldsLength > 1 ? (
           <Button
+            testID={`editor-invoice-line-item-remove-${index}`}
             size="$3"
             circular
             onPress={() => onRemove(index)}
@@ -113,12 +122,18 @@ export const EditorInvoiceLineItem = ({
       </XStack>
       <XStack flex={1} justify="space-between">
         {errors.invoice_lines_attributes?.[index]?.product_id ? (
-          <Text fontSize="$2" color="red">
+          <Text
+            testID={`editor-invoice-line-item-product-error-${index}`}
+            fontSize="$2"
+            color="red">
             {errors.invoice_lines_attributes?.[index]?.product_id?.message}
           </Text>
         ) : null}
         {errors.invoice_lines_attributes?.[index]?.quantity ? (
-          <Text fontSize="$2" color="red">
+          <Text
+            testID={`editor-invoice-line-item-quantity-error-${index}`}
+            fontSize="$2"
+            color="red">
             {errors.invoice_lines_attributes?.[index]?.quantity?.message}
           </Text>
         ) : null}

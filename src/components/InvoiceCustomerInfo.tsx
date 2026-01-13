@@ -14,6 +14,7 @@ export const InvoiceCustomerInfo = ({ customer, customerId }: InvoiceCustomerInf
   if (customer) {
     return (
       <YStack
+        testID="invoice-customer-info"
         p="$3"
         gap="$2"
         style={{
@@ -22,32 +23,32 @@ export const InvoiceCustomerInfo = ({ customer, customerId }: InvoiceCustomerInf
           borderWidth: 1,
           borderColor: theme.borderColor?.val,
         }}>
-        <Text fontSize="$3" fontWeight="600" color="$color12">
+        <Text testID="invoice-customer-info-title" fontSize="$3" fontWeight="600" color="$color12">
           Bill To
         </Text>
         <YStack gap="$1">
-          <Text fontSize="$4" fontWeight="600" color="$color12">
+          <Text testID="invoice-customer-info-name" fontSize="$4" fontWeight="600" color="$color12">
             {customer.first_name} {customer.last_name}
           </Text>
           {customer.address ? (
-            <Text fontSize="$2" color="$color11">
+            <Text testID="invoice-customer-info-address" fontSize="$2" color="$color11">
               {customer.address}
             </Text>
           ) : null}
           <XStack gap="$1" style={{ flexWrap: 'wrap' }}>
             {customer.zip_code ? (
-              <Text fontSize="$2" color="$color11">
+              <Text testID="invoice-customer-info-zip-code" fontSize="$2" color="$color11">
                 {customer.zip_code}
               </Text>
             ) : null}
             {customer.city ? (
-              <Text fontSize="$2" color="$color11">
+              <Text testID="invoice-customer-info-city" fontSize="$2" color="$color11">
                 {customer.city}
               </Text>
             ) : null}
           </XStack>
           {customer.country ? (
-            <Text fontSize="$2" color="$color11">
+            <Text testID="invoice-customer-info-country" fontSize="$2" color="$color11">
               {customer.country}
               {customer.country_code ? ` (${customer.country_code})` : ''}
             </Text>
@@ -60,6 +61,7 @@ export const InvoiceCustomerInfo = ({ customer, customerId }: InvoiceCustomerInf
   if (customerId) {
     return (
       <YStack
+        testID="invoice-customer-info-id-only"
         p="$3"
         style={{
           backgroundColor: theme.backgroundHover?.val,
@@ -67,7 +69,7 @@ export const InvoiceCustomerInfo = ({ customer, customerId }: InvoiceCustomerInf
           borderWidth: 1,
           borderColor: theme.borderColor?.val,
         }}>
-        <Text fontSize="$3" color="$color11">
+        <Text testID="invoice-customer-info-id" fontSize="$3" color="$color11">
           Customer ID: {customerId}
         </Text>
       </YStack>

@@ -7,11 +7,11 @@ type EditorTotalProps = {
 
 export const EditorTotal = ({ totalPrice }: EditorTotalProps) => {
   return totalPrice > 0 ? (
-    <XStack style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-      <Text fontSize="$5" fontWeight="600" color="$color12">
+    <XStack testID="editor-total" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+      <Text testID="editor-total-label" fontSize="$5" fontWeight="600" color="$color12">
         Total
       </Text>
-      <Text fontSize="$5" fontWeight="600" color="$color12">
+      <Text testID="editor-total-value" fontSize="$5" fontWeight="600" color="$color12">
         {formatPriceWithCurrency(totalPrice.toString())}
       </Text>
     </XStack>
