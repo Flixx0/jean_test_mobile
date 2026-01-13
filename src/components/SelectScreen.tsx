@@ -1,6 +1,5 @@
 import { useState, useEffect, ReactNode } from 'react';
 import { StyleSheet } from 'react-native';
-import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, H2, Input, Text, XStack, YStack, useTheme } from '@ui/index';
 import { Icon } from '@components/Icon';
@@ -13,7 +12,6 @@ type SelectScreenProps = {
   onClose: () => void;
   children: (debouncedSearchQuery: string) => ReactNode;
   totalCount: number;
-  onTotalCountChange: (count: number) => void;
 };
 
 export const SelectScreen = ({
@@ -23,7 +21,6 @@ export const SelectScreen = ({
   onClose,
   children,
   totalCount,
-  onTotalCountChange,
 }: SelectScreenProps) => {
   const theme = useTheme();
   const [searchQuery, setSearchQuery] = useState('');

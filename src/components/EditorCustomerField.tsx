@@ -31,7 +31,7 @@ export const EditorCustomerField = ({
         control={control}
         name="customer_id"
         rules={{ required: 'Customer is required' }}
-        render={({ field: { onChange, onBlur, value } }) => (
+        render={({ field: { onChange, onBlur } }) => (
           <Button
             testID="editor-customer-field-button"
             onPress={() => {

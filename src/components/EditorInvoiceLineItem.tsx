@@ -38,7 +38,7 @@ export const EditorInvoiceLineItem = ({
             control={control}
             name={`invoice_lines_attributes.${index}.product_id` as const}
             rules={{ required: 'Product is required' }}
-            render={({ field: { onChange, onBlur, value } }) => (
+            render={({ field: { onChange, onBlur } }) => (
               <Button
                 testID={`editor-invoice-line-item-product-button-${index}`}
                 onPress={() => {

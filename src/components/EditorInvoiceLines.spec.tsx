@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react-native';
+import { render, screen } from '@testing-library/react-native';
 import { EditorInvoiceLines, InvoiceFormData } from '@components/EditorInvoiceLines';
 import { withSpecWrapper } from '../specs/wrapper';
 import { useForm, useFieldArray } from 'react-hook-form';

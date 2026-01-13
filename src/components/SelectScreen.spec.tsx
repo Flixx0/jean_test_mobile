@@ -5,7 +5,6 @@ import { withSpecWrapper } from '../specs/wrapper';
 describe('SelectScreen', () => {
   it('renders select screen with all required fields', () => {
     const mockOnClose = jest.fn();
-    const mockOnTotalCountChange = jest.fn();
     render(
       withSpecWrapper(
         <SelectScreen
@@ -13,8 +12,7 @@ describe('SelectScreen', () => {
           searchPlaceholder="Search customers"
           itemName="customer"
           onClose={mockOnClose}
-          totalCount={10}
-          onTotalCountChange={mockOnTotalCountChange}>
+          totalCount={10}>
           {() => <></>}
         </SelectScreen>,
       ),
@@ -28,7 +26,6 @@ describe('SelectScreen', () => {
 
   it('displays the correct title', () => {
     const mockOnClose = jest.fn();
-    const mockOnTotalCountChange = jest.fn();
     render(
       withSpecWrapper(
         <SelectScreen
@@ -36,8 +33,7 @@ describe('SelectScreen', () => {
           searchPlaceholder="Search customers"
           itemName="customer"
           onClose={mockOnClose}
-          totalCount={10}
-          onTotalCountChange={mockOnTotalCountChange}>
+          totalCount={10}>
           {() => <></>}
         </SelectScreen>,
       ),
@@ -50,7 +46,6 @@ describe('SelectScreen', () => {
 
   it('displays the correct count when totalCount is greater than 0', () => {
     const mockOnClose = jest.fn();
-    const mockOnTotalCountChange = jest.fn();
     render(
       withSpecWrapper(
         <SelectScreen
@@ -58,8 +53,7 @@ describe('SelectScreen', () => {
           searchPlaceholder="Search customers"
           itemName="customer"
           onClose={mockOnClose}
-          totalCount={10}
-          onTotalCountChange={mockOnTotalCountChange}>
+          totalCount={10}>
           {() => <></>}
         </SelectScreen>,
       ),
@@ -72,7 +66,6 @@ describe('SelectScreen', () => {
 
   it('displays singular form when totalCount is 1', () => {
     const mockOnClose = jest.fn();
-    const mockOnTotalCountChange = jest.fn();
     render(
       withSpecWrapper(
         <SelectScreen
@@ -80,8 +73,7 @@ describe('SelectScreen', () => {
           searchPlaceholder="Search customers"
           itemName="customer"
           onClose={mockOnClose}
-          totalCount={1}
-          onTotalCountChange={mockOnTotalCountChange}>
+          totalCount={1}>
           {() => <></>}
         </SelectScreen>,
       ),
@@ -94,7 +86,6 @@ describe('SelectScreen', () => {
 
   it('does not display count when totalCount is 0', () => {
     const mockOnClose = jest.fn();
-    const mockOnTotalCountChange = jest.fn();
     render(
       withSpecWrapper(
         <SelectScreen
@@ -102,8 +93,7 @@ describe('SelectScreen', () => {
           searchPlaceholder="Search customers"
           itemName="customer"
           onClose={mockOnClose}
-          totalCount={0}
-          onTotalCountChange={mockOnTotalCountChange}>
+          totalCount={0}>
           {() => <></>}
         </SelectScreen>,
       ),
@@ -114,7 +104,6 @@ describe('SelectScreen', () => {
 
   it('calls onClose when close button is pressed', () => {
     const mockOnClose = jest.fn();
-    const mockOnTotalCountChange = jest.fn();
     render(
       withSpecWrapper(
         <SelectScreen
@@ -122,8 +111,7 @@ describe('SelectScreen', () => {
           searchPlaceholder="Search customers"
           itemName="customer"
           onClose={mockOnClose}
-          totalCount={10}
-          onTotalCountChange={mockOnTotalCountChange}>
+          totalCount={10}>
           {() => <></>}
         </SelectScreen>,
       ),

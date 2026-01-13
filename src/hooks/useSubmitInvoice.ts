@@ -4,7 +4,7 @@ import { NavigationProp } from '@react-navigation/native';
 import { useCreateInvoice } from '@queries/useCreateInvoice';
 import { useUpdateInvoice } from '@queries/useUpdateInvoice';
 import type { Paths } from '@api/generated/client';
-import type { InvoiceFormData, InvoiceFormDataWithIds } from '@components/EditorInvoiceLines';
+import type { InvoiceFormDataWithIds } from '@components/EditorInvoiceLines';
 
 type UseSubmitInvoiceParams = {
   isEditMode: boolean;

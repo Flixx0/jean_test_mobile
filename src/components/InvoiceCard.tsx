@@ -3,7 +3,7 @@ import { Text, XStack, YStack, useTheme } from 'tamagui';
 import { InvoiceStatus } from './InvoiceStatus';
 import type { Paths } from '@api/generated/client';
 import { formatPriceWithCurrency } from '@utils/formatPrice';
-import { format, isAfter, isBefore } from 'date-fns';
+import { format, isBefore } from 'date-fns';
 import { useMemo } from 'react';
 type InvoiceItem = Paths.GetInvoices.Responses.$200['invoices'][number];
 

@@ -1,4 +1,4 @@
-import { Control, FieldErrors } from 'react-hook-form';
+import { FieldErrors } from 'react-hook-form';
 import { Label, YStack } from '@ui/index';
 import { StatusSelect, type InvoiceStatus } from '@components/StatusSelect';
 import type { InvoiceFormData } from '@components/EditorInvoiceLines';

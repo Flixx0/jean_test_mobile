@@ -17,7 +17,7 @@ import type { Components } from '@api/generated/client';
 import type { InvoiceStatus } from '@components/StatusSelect';
 import type { EditorStackParams } from '@navigators/EditorStack';
 import type { HomeStackParams } from '@navigators/HomeStack';
-import type { InvoiceFormData, InvoiceFormDataWithIds } from '@components/EditorInvoiceLines';
+import type { InvoiceFormData } from '@components/EditorInvoiceLines';
 
 const formatDateForInput = (date: Date): string => {
   const year = date.getFullYear();
