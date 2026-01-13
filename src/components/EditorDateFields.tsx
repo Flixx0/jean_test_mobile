@@ -1,18 +1,7 @@
 import { Controller, Control, FieldErrors } from 'react-hook-form';
 import { Label, Text, XStack, YStack } from '@ui/index';
 import { DatePickerInput } from '@components/DatePickerInput';
-
-type InvoiceFormData = {
-  customer_id: string;
-  finalized: boolean;
-  paid: boolean;
-  date: string;
-  deadline: string;
-  invoice_lines_attributes: {
-    product_id: string;
-    quantity: string;
-  }[];
-};
+import type { InvoiceFormData } from '@components/EditorInvoiceLines';
 
 type EditorDateFieldsProps = {
   control: Control<InvoiceFormData>;
@@ -21,9 +10,9 @@ type EditorDateFieldsProps = {
 
 export const EditorDateFields = ({ control, errors }: EditorDateFieldsProps) => {
   return (
-    <XStack flex={1} gap="$3">
+    <XStack testID="editor-date-fields" flex={1} gap="$3">
       <YStack flex={1} gap="$1">
-        <Label htmlFor="date" fontSize="$4" color="$color12">
+        <Label testID="editor-date-fields-date-label" htmlFor="date" fontSize="$4" color="$color12">
           Date
         </Label>
         <Controller
@@ -41,13 +30,17 @@ export const EditorDateFields = ({ control, errors }: EditorDateFieldsProps) => 
           )}
         />
         {errors.date ? (
-          <Text fontSize="$2" color="red">
+          <Text testID="editor-date-fields-date-error" fontSize="$2" color="red">
             {errors.date.message}
           </Text>
         ) : null}
       </YStack>
       <YStack flex={1} gap="$1">
-        <Label htmlFor="deadline" fontSize="$4" color="$color12">
+        <Label
+          testID="editor-date-fields-deadline-label"
+          htmlFor="deadline"
+          fontSize="$4"
+          color="$color12">
           Deadline
         </Label>
         <Controller
@@ -65,7 +58,7 @@ export const EditorDateFields = ({ control, errors }: EditorDateFieldsProps) => 
           )}
         />
         {errors.deadline ? (
-          <Text fontSize="$2" color="red">
+          <Text testID="editor-date-fields-deadline-error" fontSize="$2" color="red">
             {errors.deadline.message}
           </Text>
         ) : null}

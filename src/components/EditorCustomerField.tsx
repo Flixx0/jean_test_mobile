@@ -3,24 +3,8 @@ import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { Button, Label, Text, XStack, YStack, useTheme } from '@ui/index';
 import { Icon } from '@components/Icon';
 import type { Components } from '@api/generated/client';
-
-type EditorStackParams = {
-  Editor: undefined;
-  CustomerSelect: { onSelectCustomer: (customer: Components.Schemas.Customer) => void };
-  ProductSelect: { onSelectProduct: (product: Components.Schemas.Product) => void };
-};
-
-type InvoiceFormData = {
-  customer_id: string;
-  finalized: boolean;
-  paid: boolean;
-  date: string;
-  deadline: string;
-  invoice_lines_attributes: {
-    product_id: string;
-    quantity: string;
-  }[];
-};
+import type { EditorStackParams } from '@navigators/EditorStack';
+import type { InvoiceFormData } from '@components/EditorInvoiceLines';
 
 type EditorCustomerFieldProps = {
   control: Control<InvoiceFormData>;
@@ -39,16 +23,17 @@ export const EditorCustomerField = ({
   const theme = useTheme();
 
   return (
-    <YStack gap="$1">
-      <Label htmlFor="customer_id" fontSize="$4">
+    <YStack testID="editor-customer-field" gap="$1">
+      <Label testID="editor-customer-field-label" htmlFor="customer_id" fontSize="$4">
         Customer
       </Label>
       <Controller
         control={control}
         name="customer_id"
         rules={{ required: 'Customer is required' }}
-        render={({ field: { onChange, onBlur, value } }) => (
+        render={({ field: { onChange, onBlur } }) => (
           <Button
+            testID="editor-customer-field-button"
             onPress={() => {
               navigation.navigate('CustomerSelect', {
                 onSelectCustomer: (customer: Components.Schemas.Customer) => {
@@ -60,7 +45,10 @@ export const EditorCustomerField = ({
             }}
             style={{ justifyContent: 'flex-start' }}>
             <XStack flex={1} style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-              <Text fontSize="$4" color={selectedCustomer ? '$color12' : '$color11'}>
+              <Text
+                testID="editor-customer-field-text"
+                fontSize="$4"
+                color={selectedCustomer ? '$color12' : '$color11'}>
                 {selectedCustomer
                   ? `${selectedCustomer.first_name} ${selectedCustomer.last_name}`
                   : 'Select a customer'}
@@ -71,7 +59,7 @@ export const EditorCustomerField = ({
         )}
       />
       {errors.customer_id ? (
-        <Text fontSize="$2" color="red">
+        <Text testID="editor-customer-field-error" fontSize="$2" color="red">
           {errors.customer_id.message}
         </Text>
       ) : null}

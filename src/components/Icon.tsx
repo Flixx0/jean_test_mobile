@@ -28,5 +28,5 @@ export const Icon: React.FC<IconProps> = ({ name, color, size = 24, ...props }) 
     return null;
   }
 
-  return <IconComponent color={color} size={size} {...props} />;
+  return <IconComponent testID={`icon-${name}`} color={color} size={size} {...props} />;
 };

@@ -4,7 +4,6 @@ import { UIProvider } from '@ui/config';
 import { TabNavigator } from '@navigators/TabNavigator';
 import { ApiProvider } from '@api/index';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { StyleSheet, View } from 'react-native';
 
 const queryClient = new QueryClient({
   defaultOptions: {

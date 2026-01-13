@@ -2,15 +2,7 @@ import { useState } from 'react';
 import { RouteProp, useRoute, useNavigation, NavigationProp } from '@react-navigation/native';
 import { ProductsList } from '@components/ProductsList';
 import { SelectScreen } from '@components/SelectScreen';
-import type { Components } from '@api/generated/client';
-
-type Product = Components.Schemas.Product;
-
-type EditorStackParams = {
-  Editor: undefined;
-  CustomerSelect: { onSelectCustomer: (customer: Components.Schemas.Customer) => void };
-  ProductSelect: { onSelectProduct: (product: Product) => void };
-};
+import type { EditorStackParams } from '@navigators/EditorStack';
 
 export const ProductSelectScreen = () => {
   const route = useRoute<RouteProp<EditorStackParams, 'ProductSelect'>>();
@@ -24,8 +16,7 @@ export const ProductSelectScreen = () => {
       searchPlaceholder="Search products..."
       itemName="product"
       onClose={() => navigation.goBack()}
-      totalCount={totalCount}
-      onTotalCountChange={setTotalCount}>
+      totalCount={totalCount}>
       {(debouncedSearchQuery) => (
         <ProductsList
           searchQuery={debouncedSearchQuery}

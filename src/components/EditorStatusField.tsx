@@ -1,18 +1,7 @@
-import { Control, FieldErrors } from 'react-hook-form';
+import { FieldErrors } from 'react-hook-form';
 import { Label, YStack } from '@ui/index';
 import { StatusSelect, type InvoiceStatus } from '@components/StatusSelect';
-
-type InvoiceFormData = {
-  customer_id: string;
-  finalized: boolean;
-  paid: boolean;
-  date: string;
-  deadline: string;
-  invoice_lines_attributes: {
-    product_id: string;
-    quantity: string;
-  }[];
-};
+import type { InvoiceFormData } from '@components/EditorInvoiceLines';
 
 type EditorStatusFieldProps = {
   status: InvoiceStatus;
@@ -22,8 +11,8 @@ type EditorStatusFieldProps = {
 
 export const EditorStatusField = ({ status, onStatusChange, errors }: EditorStatusFieldProps) => {
   return (
-    <YStack gap="$1">
-      <Label htmlFor="status" fontSize="$4" color="$color12">
+    <YStack testID="editor-status-field" gap="$1">
+      <Label testID="editor-status-field-label" htmlFor="status" fontSize="$4" color="$color12">
         Status
       </Label>
       <StatusSelect
@@ -33,7 +22,7 @@ export const EditorStatusField = ({ status, onStatusChange, errors }: EditorStat
         placeholder="Select status"
       />
       {errors.finalized || errors.paid ? (
-        <Label fontSize="$2" color="red">
+        <Label testID="editor-status-field-error" fontSize="$2" color="red">
           {errors.finalized?.message || errors.paid?.message}
         </Label>
       ) : null}

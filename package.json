@@ -55,6 +55,7 @@
     "eslint-import-resolver-babel-module": "^5.3.2",
     "eslint-plugin-prettier": "5.5.4",
     "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-unused-imports": "^4.3.0",
     "jest": "29.7.0",
     "jest-expo": "54.0.16",
     "openapi-client-axios-typegen": "7.7.0",

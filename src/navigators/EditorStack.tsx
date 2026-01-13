@@ -4,7 +4,7 @@ import { CustomerSelectScreen } from '@screens/CustomerSelectScreen';
 import { ProductSelectScreen } from '@screens/ProductSelectScreen';
 import type { Components } from '@api/generated/client';
 
-type EditorStackParams = {
+export type EditorStackParams = {
   Editor: undefined;
   CustomerSelect: { onSelectCustomer: (customer: Components.Schemas.Customer) => void };
   ProductSelect: { onSelectProduct: (product: Components.Schemas.Product) => void };

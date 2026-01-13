@@ -13,6 +13,7 @@ export const InvoiceLineItem = ({ item }: InvoiceLineItemProps) => {
 
   return (
     <XStack
+      testID="invoice-line-item"
       p="$3"
       style={{
         borderBottomWidth: 2,
@@ -20,22 +21,22 @@ export const InvoiceLineItem = ({ item }: InvoiceLineItemProps) => {
         backgroundColor: theme.color3?.val,
       }}>
       <YStack flex={1} gap="$1">
-        <Text fontSize="$4" fontWeight="600" color="$color12">
+        <Text testID="invoice-line-item-label" fontSize="$4" fontWeight="600" color="$color12">
           {item.label}
         </Text>
-        <Text fontSize="$2" color="$color11">
+        <Text testID="invoice-line-item-quantity" fontSize="$2" color="$color11">
           Quantity: {item.quantity} {item.unit}
         </Text>
-        <Text fontSize="$2" color="$color11">
+        <Text testID="invoice-line-item-product-id" fontSize="$2" color="$color11">
           Product ID: {item.product_id}
         </Text>
       </YStack>
       <YStack style={{ alignItems: 'flex-end' }} gap="$1">
-        <Text fontSize="$4" fontWeight="600" color="$color12">
+        <Text testID="invoice-line-item-price" fontSize="$4" fontWeight="600" color="$color12">
           {formatPriceWithCurrency(item.price)}
         </Text>
-        {item.tax ? (
-          <Text fontSize="$2" color="$color11">
+        {item.tax && item.tax !== '' ? (
+          <Text testID="invoice-line-item-tax" fontSize="$2" color="$color11">
             Tax: {formatPriceWithCurrency(item.tax)}
           </Text>
         ) : null}

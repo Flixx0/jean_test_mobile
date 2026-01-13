@@ -19,8 +19,13 @@ export const EditorSubmitButton = ({
   isEditMode = false,
 }: EditorSubmitButtonProps) => {
   return (
-    <Button size="$5" bg="$accent1" onPress={onSubmit} disabled={isSubmitting}>
-      <Text fontSize="$5" fontWeight="600" color="$accent11">
+    <Button
+      testID="editor-submit-button"
+      size="$5"
+      bg="$accent1"
+      onPress={onSubmit}
+      disabled={isSubmitting}>
+      <Text testID="editor-submit-button-text" fontSize="$5" fontWeight="600" color="$accent11">
         {getButtonText(isSubmitting, isEditMode)}
       </Text>
     </Button>

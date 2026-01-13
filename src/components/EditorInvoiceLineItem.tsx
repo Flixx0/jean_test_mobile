@@ -1,26 +1,10 @@
-import { Controller, Control, FieldErrors, UseFieldArrayReturn } from 'react-hook-form';
+import { Controller, Control, FieldErrors } from 'react-hook-form';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { Button, Input, Label, Text, XStack, YStack, useTheme } from '@ui/index';
+import { Button, Input, Text, XStack, YStack, useTheme } from '@ui/index';
 import { Icon } from '@components/Icon';
 import type { Components } from '@api/generated/client';
-
-type EditorStackParams = {
-  Editor: undefined;
-  CustomerSelect: { onSelectCustomer: (customer: Components.Schemas.Customer) => void };
-  ProductSelect: { onSelectProduct: (product: Components.Schemas.Product) => void };
-};
-
-type InvoiceFormData = {
-  customer_id: string;
-  finalized: boolean;
-  paid: boolean;
-  date: string;
-  deadline: string;
-  invoice_lines_attributes: {
-    product_id: string;
-    quantity: string;
-  }[];
-};
+import type { EditorStackParams } from '@navigators/EditorStack';
+import type { InvoiceFormData } from '@components/EditorInvoiceLines';
 
 type EditorInvoiceLineItemProps = {
   control: Control<InvoiceFormData>;
@@ -47,15 +31,16 @@ export const EditorInvoiceLineItem = ({
   const theme = useTheme();
 
   return (
-    <YStack key={field.id} gap="$2">
+    <YStack testID={`editor-invoice-line-item-${index}`} key={field.id} gap="$2">
       <XStack key={field.id} gap="$2" style={{ alignItems: 'center' }}>
         <YStack flex={1} gap="$2">
           <Controller
             control={control}
             name={`invoice_lines_attributes.${index}.product_id` as const}
             rules={{ required: 'Product is required' }}
-            render={({ field: { onChange, onBlur, value } }) => (
+            render={({ field: { onChange, onBlur } }) => (
               <Button
+                testID={`editor-invoice-line-item-product-button-${index}`}
                 onPress={() => {
                   navigation.navigate('ProductSelect', {
                     onSelectProduct: (selectedProduct: Components.Schemas.Product) => {
@@ -67,11 +52,17 @@ export const EditorInvoiceLineItem = ({
                 }}
                 style={{ justifyContent: 'flex-start' }}>
                 <XStack flex={1} justify="space-between" style={{ alignItems: 'center' }}>
-                  <Text fontSize="$4" color={product ? '$color12' : '$color11'}>
+                  <Text
+                    testID={`editor-invoice-line-item-product-text-${index}`}
+                    fontSize="$4"
+                    color={product ? '$color12' : '$color11'}>
                     {product ? product.label : 'Select a product'}
                   </Text>
                   {product ? (
-                    <Text fontSize="$2" color="$accent4">
+                    <Text
+                      testID={`editor-invoice-line-item-product-price-${index}`}
+                      fontSize="$2"
+                      color="$accent4">
                       {product.unit_price} €
                     </Text>
                   ) : null}
@@ -90,6 +81,7 @@ export const EditorInvoiceLineItem = ({
             }}
             render={({ field: { onChange, onBlur, value } }) => (
               <Input
+                testID={`editor-invoice-line-item-quantity-${index}`}
                 placeholder="Qty"
                 keyboardType="number-pad"
                 value={value}
@@ -101,6 +93,7 @@ export const EditorInvoiceLineItem = ({
         </YStack>
         {fieldsLength > 1 ? (
           <Button
+            testID={`editor-invoice-line-item-remove-${index}`}
             size="$3"
             circular
             onPress={() => onRemove(index)}
@@ -113,12 +106,18 @@ export const EditorInvoiceLineItem = ({
       </XStack>
       <XStack flex={1} justify="space-between">
         {errors.invoice_lines_attributes?.[index]?.product_id ? (
-          <Text fontSize="$2" color="red">
+          <Text
+            testID={`editor-invoice-line-item-product-error-${index}`}
+            fontSize="$2"
+            color="red">
             {errors.invoice_lines_attributes?.[index]?.product_id?.message}
           </Text>
         ) : null}
         {errors.invoice_lines_attributes?.[index]?.quantity ? (
-          <Text fontSize="$2" color="red">
+          <Text
+            testID={`editor-invoice-line-item-quantity-error-${index}`}
+            fontSize="$2"
+            color="red">
             {errors.invoice_lines_attributes?.[index]?.quantity?.message}
           </Text>
         ) : null}
