@@ -13,6 +13,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     supportsTablet: true,
     bundleIdentifier: 'com.pennylane',
+    infoPlist: {
+      ITSAppUsesNonExemptEncryption: false,
+    },
   },
   android: {
     adaptiveIcon: {
@@ -32,5 +35,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   extra: {
     apiUrl: process.env.API_URL || 'https://jean-test-api.herokuapp.com/',
     apiToken: process.env.API_TOKEN || '',
+    eas: {
+      projectId: '4817c88a-7e04-45ef-8338-ffa790d69fcc',
+    },
   },
 });
