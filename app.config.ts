@@ -23,6 +23,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     },
     package: 'com.pennylane',
   },
+  splash: {
+    backgroundColor: '#ffffff',
+  },
   plugins: [
     'expo-asset',
     [
