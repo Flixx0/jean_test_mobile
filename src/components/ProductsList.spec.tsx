@@ -7,9 +7,25 @@ import type { Components } from '@api/generated/client';
 jest.mock('@queries/useInfiniteProducts');
 jest.mock('@react-navigation/native', () => ({
   ...jest.requireActual('@react-navigation/native'),
-  useNavigation: () => ({
+  useNavigation: jest.fn(() => ({
     goBack: jest.fn(),
-  }),
+  })),
+  useRoute: jest.fn(() => ({
+    params: { index: 0 },
+    key: 'test',
+    name: 'ProductSelect',
+  })),
+}));
+jest.mock('@contexts/SelectionContext', () => ({
+  SelectionProvider: ({ children }: { children: React.ReactNode }) => children,
+  useSelection: jest.fn(() => ({
+    selectedCustomer: null,
+    selectedProducts: new Map(),
+    setSelectedCustomer: jest.fn(),
+    setSelectedProducts: jest.fn(),
+    setProductAt: jest.fn(),
+    clearSelection: jest.fn(),
+  })),
 }));
 
 const mockUseInfiniteProducts = useInfiniteProducts as jest.MockedFunction<
@@ -54,8 +70,7 @@ describe('ProductsList', () => {
   });
 
   it('renders products list', () => {
-    const mockOnSelectProduct = jest.fn();
-    render(withSpecWrapper(<ProductsList searchQuery="" onSelectProduct={mockOnSelectProduct} />));
+    render(withSpecWrapper(<ProductsList searchQuery="" />));
 
     expect(screen.getByTestId('products-list')).toBeTruthy();
   });
@@ -85,8 +100,7 @@ describe('ProductsList', () => {
       refetch: jest.fn(),
     } as any);
 
-    const mockOnSelectProduct = jest.fn();
-    render(withSpecWrapper(<ProductsList searchQuery="" onSelectProduct={mockOnSelectProduct} />));
+    render(withSpecWrapper(<ProductsList searchQuery="" />));
 
     expect(screen.getByText('No products found.')).toBeTruthy();
   });

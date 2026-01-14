@@ -5,14 +5,13 @@ import { EditorScreen } from '@screens/Editor';
 import { CustomerSelectScreen } from '@screens/CustomerSelectScreen';
 import { ProductSelectScreen } from '@screens/ProductSelectScreen';
 import { useTheme } from '@ui/index';
-import type { Components } from '@api/generated/client';
 
 export type HomeStackParams = {
   HomeScreen: undefined;
   Invoice: { id: number };
   EditInvoice: { id: number };
-  CustomerSelect: { onSelectCustomer: (customer: Components.Schemas.Customer) => void };
-  ProductSelect: { onSelectProduct: (product: Components.Schemas.Product) => void };
+  CustomerSelect: undefined;
+  ProductSelect: { index: number };
 };
 
 const Stack = createNativeStackNavigator<HomeStackParams>();

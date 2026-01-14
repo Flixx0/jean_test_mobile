@@ -4,14 +4,24 @@ import { withSpecWrapper } from '../specs/wrapper';
 
 jest.mock('@react-navigation/native', () => ({
   ...jest.requireActual('@react-navigation/native'),
-  useRoute: jest.fn(() => ({
-    params: {
-      onSelectCustomer: jest.fn(),
-    },
-  })),
   useNavigation: jest.fn(() => ({
     navigate: jest.fn(),
     goBack: jest.fn(),
+  })),
+}));
+
+jest.mock('@contexts/SelectionContext', () => ({
+  SelectionProvider: ({ children }: { children: React.ReactNode }) => children,
+  useSelection: jest.fn(() => ({
+    selectedCustomer: null,
+    selectedProduct: null,
+    productIndex: null,
+    isCustomerSelectionMode: true,
+    setSelectedCustomer: jest.fn(),
+    setSelectedProduct: jest.fn(),
+    setCustomerSelectionMode: jest.fn(),
+    setProductSelectionMode: jest.fn(),
+    clearSelection: jest.fn(),
   })),
 }));
 

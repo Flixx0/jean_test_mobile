@@ -2,7 +2,6 @@ import { Control, FieldErrors, UseFieldArrayReturn } from 'react-hook-form';
 import { Button, Label, Text, XStack, YStack, useTheme } from '@ui/index';
 import { Icon } from '@components/Icon';
 import { EditorInvoiceLineItem } from '@components/EditorInvoiceLineItem';
-import type { Components } from '@api/generated/client';
 
 export type InvoiceFormData = {
   customer_id: string;
@@ -27,20 +26,16 @@ export type InvoiceFormDataWithIds = Omit<InvoiceFormData, 'invoice_lines_attrib
 type EditorInvoiceLinesProps = {
   control: Control<InvoiceFormData>;
   fields: UseFieldArrayReturn<InvoiceFormData, 'invoice_lines_attributes'>['fields'];
-  selectedProducts: Map<number, Components.Schemas.Product>;
   onAddLine: () => void;
   onRemoveLine: (index: number) => void;
-  onProductSelect: (index: number, product: Components.Schemas.Product) => void;
   errors: FieldErrors<InvoiceFormData>;
 };
 
 export const EditorInvoiceLines = ({
   control,
   fields,
-  selectedProducts,
   onAddLine,
   onRemoveLine,
-  onProductSelect,
   errors,
 }: EditorInvoiceLinesProps) => {
   const theme = useTheme();
@@ -66,15 +61,12 @@ export const EditorInvoiceLines = ({
       </XStack>
 
       {fields.map((field, index) => {
-        const product = selectedProducts.get(index);
         return (
           <EditorInvoiceLineItem
             key={field.id}
             control={control}
             index={index}
             field={field}
-            product={product}
-            onProductSelect={onProductSelect}
             onRemove={onRemoveLine}
             fieldsLength={fields.length}
             errors={errors}

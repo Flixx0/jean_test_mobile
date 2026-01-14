@@ -9,14 +9,12 @@ import type { InvoiceFormData } from '@components/EditorInvoiceLines';
 type EditorCustomerFieldProps = {
   control: Control<InvoiceFormData>;
   selectedCustomer: Components.Schemas.Customer | null;
-  onCustomerSelect: (customer: Components.Schemas.Customer) => void;
   errors: FieldErrors<InvoiceFormData>;
 };
 
 export const EditorCustomerField = ({
   control,
   selectedCustomer,
-  onCustomerSelect,
   errors,
 }: EditorCustomerFieldProps) => {
   const navigation = useNavigation<NavigationProp<EditorStackParams>>();
@@ -31,17 +29,11 @@ export const EditorCustomerField = ({
         control={control}
         name="customer_id"
         rules={{ required: 'Customer is required' }}
-        render={({ field: { onChange, onBlur } }) => (
+        render={() => (
           <Button
             testID="editor-customer-field-button"
             onPress={() => {
-              navigation.navigate('CustomerSelect', {
-                onSelectCustomer: (customer: Components.Schemas.Customer) => {
-                  onChange(String(customer.id));
-                  onCustomerSelect(customer);
-                  onBlur();
-                },
-              });
+              navigation.navigate('CustomerSelect');
             }}
             style={{ justifyContent: 'flex-start' }}>
             <XStack flex={1} style={{ justifyContent: 'space-between', alignItems: 'center' }}>

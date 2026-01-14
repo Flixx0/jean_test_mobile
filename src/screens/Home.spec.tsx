@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react-native';
 import { HomeScreen } from '@screens/Home';
 import { withSpecWrapper } from '../specs/wrapper';
 import type { Components } from '@api/generated/client';
+import { useInfiniteInvoices } from '@queries/useInfiniteInvoices';
 
 jest.mock('@react-navigation/native', () => ({
   ...jest.requireActual('@react-navigation/native'),
@@ -76,19 +77,20 @@ describe('Home', () => {
   });
 
   it('displays empty state when no invoices', () => {
-    const { useInfiniteInvoices } = require('@queries/useInfiniteInvoices');
-    (useInfiniteInvoices as jest.Mock).mockReturnValueOnce({
+    jest.mocked(useInfiniteInvoices).mockReturnValueOnce({
       data: {
         pages: [
           {
             invoices: [],
             pagination: {
               page: 1,
+              page_size: 30,
               total_pages: 1,
               total_entries: 0,
             },
           },
         ],
+        pageParams: [undefined],
       },
       fetchNextPage: jest.fn(),
       hasNextPage: false,
@@ -96,7 +98,7 @@ describe('Home', () => {
       refetch: jest.fn(),
       isLoading: false,
       isFetching: false,
-    });
+    } as any);
 
     render(withSpecWrapper(<HomeScreen />));
 

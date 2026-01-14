@@ -1,12 +1,10 @@
 import { useState } from 'react';
-import { RouteProp, useRoute, useNavigation, NavigationProp } from '@react-navigation/native';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { CustomersList } from '@components/CustomersList';
 import { SelectScreen } from '@components/SelectScreen';
 import type { EditorStackParams } from '@navigators/EditorStack';
 
 export const CustomerSelectScreen = () => {
-  const route = useRoute<RouteProp<EditorStackParams, 'CustomerSelect'>>();
-  const { onSelectCustomer } = route.params;
   const navigation = useNavigation<NavigationProp<EditorStackParams>>();
   const [totalCount, setTotalCount] = useState(0);
 
@@ -18,11 +16,7 @@ export const CustomerSelectScreen = () => {
       onClose={() => navigation.goBack()}
       totalCount={totalCount}>
       {(debouncedSearchQuery) => (
-        <CustomersList
-          searchQuery={debouncedSearchQuery}
-          onSelectCustomer={onSelectCustomer}
-          onTotalCountChange={setTotalCount}
-        />
+        <CustomersList searchQuery={debouncedSearchQuery} onTotalCountChange={setTotalCount} />
       )}
     </SelectScreen>
   );

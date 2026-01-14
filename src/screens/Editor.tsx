@@ -1,4 +1,4 @@
-import { useCallback, useState, useMemo } from 'react';
+import { useCallback, useState, useMemo, useEffect } from 'react';
 import { useForm, useFieldArray, useWatch } from 'react-hook-form';
 import { NavigationProp, useNavigation, useRoute } from '@react-navigation/native';
 import { ScrollView, StyleSheet } from 'react-native';
@@ -12,7 +12,8 @@ import { EditorInvoiceLines } from '@components/EditorInvoiceLines';
 import { EditorTotal } from '@components/EditorTotal';
 import { EditorSubmitButton } from '@components/EditorSubmitButton';
 import { useSubmitInvoice } from '@hooks/useSubmitInvoice';
-import { useInvoiceFormInitialization } from '@hooks/useInvoiceFormInitialization';
+import { useInvoiceOptional } from '@queries/useInvoice';
+import { useSelection } from '@contexts/SelectionContext';
 import type { Components } from '@api/generated/client';
 import type { InvoiceStatus } from '@components/StatusSelect';
 import type { EditorStackParams } from '@navigators/EditorStack';
@@ -36,12 +37,6 @@ export const EditorScreen = () => {
   const navigation = (isEditMode ? homeNavigation : editorNavigation) as any;
 
   const theme = useTheme();
-  const [selectedCustomer, setSelectedCustomer] = useState<Components.Schemas.Customer | null>(
-    null,
-  );
-  const [selectedProducts, setSelectedProducts] = useState<Map<number, Components.Schemas.Product>>(
-    new Map(),
-  );
   // Track original invoice line IDs to detect deletions
   const [originalLineIds, setOriginalLineIds] = useState<Set<number>>(new Set());
 
@@ -55,6 +50,81 @@ export const EditorScreen = () => {
       invoice_lines_attributes: [{ product_id: '', quantity: '1' }],
     },
   });
+
+  const {
+    selectedCustomer,
+    selectedProducts,
+    setSelectedCustomer,
+    setSelectedProducts,
+    setProductAt,
+    clearSelection,
+  } = useSelection();
+
+  const invoiceQuery = useInvoiceOptional(invoiceId, isEditMode);
+  const invoiceData = invoiceQuery.data || null;
+
+  // Reset context and form on mount
+  useEffect(() => {
+    if (isEditMode && invoiceData) {
+      const invoice = invoiceData as Components.Schemas.Invoice & {
+        customer?: Components.Schemas.Customer;
+      };
+
+      if (invoice.customer) {
+        setSelectedCustomer(invoice.customer);
+      } else {
+        setSelectedCustomer(null);
+      }
+
+      const lines = invoice.invoice_lines || [];
+      const productsMap = new Map<number, Components.Schemas.Product>();
+      const lineIds = new Set<number>();
+
+      lines.forEach((line, index) => {
+        if (line.product) {
+          productsMap.set(index, line.product);
+        }
+        if (line.id) {
+          lineIds.add(line.id);
+        }
+      });
+
+      setSelectedProducts(productsMap);
+      setOriginalLineIds(lineIds);
+
+      reset({
+        customer_id: invoice.customer_id ? String(invoice.customer_id) : '',
+        finalized: invoice.finalized || false,
+        paid: invoice.paid || false,
+        date: invoice.date || formatDateForInput(new Date()),
+        deadline:
+          invoice.deadline || formatDateForInput(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)),
+        invoice_lines_attributes:
+          lines.length > 0
+            ? lines.map((line) => ({
+                id: line.id ? String(line.id) : undefined,
+                product_id: line.product_id ? String(line.product_id) : '',
+                quantity: line.quantity ? String(line.quantity) : '1',
+              }))
+            : [{ product_id: '', quantity: '1' }],
+      });
+    } else {
+      clearSelection();
+      setOriginalLineIds(new Set());
+    }
+  }, [isEditMode, invoiceData, reset, setSelectedCustomer, setSelectedProducts, clearSelection]);
+
+  useEffect(() => {
+    if (selectedCustomer) {
+      setValue('customer_id', String(selectedCustomer.id));
+    }
+  }, [selectedCustomer, setValue]);
+
+  useEffect(() => {
+    selectedProducts.forEach((product, index) => {
+      setValue(`invoice_lines_attributes.${index}.product_id` as const, String(product.id));
+    });
+  }, [selectedProducts, setValue]);
 
   const finalized = useWatch({ control, name: 'finalized' });
   const paid = useWatch({ control, name: 'paid' });
@@ -109,50 +179,32 @@ export const EditorScreen = () => {
     invoiceId,
     originalLineIds,
     navigation,
-  });
-
-  useInvoiceFormInitialization({
-    isEditMode,
-    invoiceId,
     reset,
-    setSelectedCustomer,
-    setSelectedProducts,
-    setOriginalLineIds,
   });
 
   const addInvoiceLine = useCallback(() => {
-    navigation.navigate('ProductSelect', {
-      onSelectProduct: (product: Components.Schemas.Product) => {
-        const newIndex = fields.length;
-        append({ product_id: String(product.id), quantity: '1' });
-        setSelectedProducts((prev) => {
-          const newMap = new Map(prev);
-          newMap.set(newIndex, product);
-          return newMap;
-        });
-      },
-    });
-  }, [append, fields.length, navigation]);
+    const newIndex = fields.length;
+    append({ product_id: '', quantity: '1' });
+    navigation.navigate('ProductSelect', { index: newIndex });
+  }, [fields.length, append, navigation]);
 
   const removeInvoiceLine = useCallback(
     (index: number) => {
       if (fields.length > 1) {
         remove(index);
-        setSelectedProducts((prev) => {
-          const newMap = new Map(prev);
-          newMap.delete(index);
-          // Reindex products after removal
-          const reindexed = new Map<number, Components.Schemas.Product>();
-          Array.from(newMap.entries())
-            .sort(([a], [b]) => a - b)
-            .forEach(([_oldIndex, product], newIndex) => {
-              reindexed.set(newIndex, product);
-            });
-          return reindexed;
+        setProductAt(index, null);
+        const reindexed = new Map<number, Components.Schemas.Product>();
+        selectedProducts.forEach((product, oldIndex) => {
+          if (oldIndex < index) {
+            reindexed.set(oldIndex, product);
+          } else if (oldIndex > index) {
+            reindexed.set(oldIndex - 1, product);
+          }
         });
+        setSelectedProducts(reindexed);
       }
     },
-    [fields.length, remove],
+    [fields.length, remove, setProductAt, selectedProducts, setSelectedProducts],
   );
 
   const screenContent = (
@@ -186,23 +238,14 @@ export const EditorScreen = () => {
           <EditorCustomerField
             control={control}
             selectedCustomer={selectedCustomer}
-            onCustomerSelect={setSelectedCustomer}
             errors={formState.errors}
           />
           <EditorDateFields control={control} errors={formState.errors} />
           <EditorInvoiceLines
             control={control}
             fields={fields}
-            selectedProducts={selectedProducts}
             onAddLine={addInvoiceLine}
             onRemoveLine={removeInvoiceLine}
-            onProductSelect={(index, product) => {
-              setSelectedProducts((prev) => {
-                const newMap = new Map(prev);
-                newMap.set(index, product);
-                return newMap;
-              });
-            }}
             errors={formState.errors}
           />
         </YStack>

@@ -4,6 +4,7 @@ import { UIProvider } from '@ui/config';
 import { TabNavigator } from '@navigators/TabNavigator';
 import { ApiProvider } from '@api/index';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { SelectionProvider } from '@contexts/SelectionContext';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -25,9 +26,11 @@ export const App = () => {
     <ApiProvider url={apiUrl} token={apiToken}>
       <QueryClientProvider client={queryClient}>
         <UIProvider>
-          <NavigationContainer>
-            <TabNavigator />
-          </NavigationContainer>
+          <SelectionProvider>
+            <NavigationContainer>
+              <TabNavigator />
+            </NavigationContainer>
+          </SelectionProvider>
         </UIProvider>
       </QueryClientProvider>
     </ApiProvider>

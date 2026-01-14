@@ -2,12 +2,11 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { EditorScreen } from '@screens/Editor';
 import { CustomerSelectScreen } from '@screens/CustomerSelectScreen';
 import { ProductSelectScreen } from '@screens/ProductSelectScreen';
-import type { Components } from '@api/generated/client';
 
 export type EditorStackParams = {
   Editor: undefined;
-  CustomerSelect: { onSelectCustomer: (customer: Components.Schemas.Customer) => void };
-  ProductSelect: { onSelectProduct: (product: Components.Schemas.Product) => void };
+  CustomerSelect: undefined;
+  ProductSelect: { index: number };
 };
 
 const Stack = createNativeStackNavigator<EditorStackParams>();

@@ -2,16 +2,14 @@ import { Controller, Control, FieldErrors } from 'react-hook-form';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { Button, Input, Text, XStack, YStack, useTheme } from '@ui/index';
 import { Icon } from '@components/Icon';
-import type { Components } from '@api/generated/client';
 import type { EditorStackParams } from '@navigators/EditorStack';
 import type { InvoiceFormData } from '@components/EditorInvoiceLines';
+import { useSelection } from '@contexts/SelectionContext';
 
 type EditorInvoiceLineItemProps = {
   control: Control<InvoiceFormData>;
   index: number;
   field: { id: string };
-  product: Components.Schemas.Product | undefined;
-  onProductSelect: (index: number, product: Components.Schemas.Product) => void;
   onRemove: (index: number) => void;
   fieldsLength: number;
   errors: FieldErrors<InvoiceFormData>;
@@ -21,14 +19,14 @@ export const EditorInvoiceLineItem = ({
   control,
   index,
   field,
-  product,
-  onProductSelect,
   onRemove,
   fieldsLength,
   errors,
 }: EditorInvoiceLineItemProps) => {
   const navigation = useNavigation<NavigationProp<EditorStackParams>>();
   const theme = useTheme();
+  const { selectedProducts } = useSelection();
+  const product = selectedProducts.get(index);
 
   return (
     <YStack testID={`editor-invoice-line-item-${index}`} key={field.id} gap="$2">
@@ -38,17 +36,11 @@ export const EditorInvoiceLineItem = ({
             control={control}
             name={`invoice_lines_attributes.${index}.product_id` as const}
             rules={{ required: 'Product is required' }}
-            render={({ field: { onChange, onBlur } }) => (
+            render={() => (
               <Button
                 testID={`editor-invoice-line-item-product-button-${index}`}
                 onPress={() => {
-                  navigation.navigate('ProductSelect', {
-                    onSelectProduct: (selectedProduct: Components.Schemas.Product) => {
-                      onChange(String(selectedProduct.id));
-                      onProductSelect(index, selectedProduct);
-                      onBlur();
-                    },
-                  });
+                  navigation.navigate('ProductSelect', { index });
                 }}
                 style={{ justifyContent: 'flex-start' }}>
                 <XStack flex={1} justify="space-between" style={{ alignItems: 'center' }}>

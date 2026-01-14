@@ -16,9 +16,7 @@ type UseInvoiceFormInitializationParams = {
   invoiceId?: number;
   reset: UseFormReset<InvoiceFormDataWithIds>;
   setSelectedCustomer: (customer: Components.Schemas.Customer | null) => void;
-  setSelectedProducts: React.Dispatch<
-    React.SetStateAction<Map<number, Components.Schemas.Product>>
-  >;
+  setSelectedProducts: (products: Map<number, Components.Schemas.Product>) => void;
   setOriginalLineIds: React.Dispatch<React.SetStateAction<Set<number>>>;
 };
 
