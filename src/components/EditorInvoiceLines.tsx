@@ -30,7 +30,6 @@ type EditorInvoiceLinesProps = {
   selectedProducts: Map<number, Components.Schemas.Product>;
   onAddLine: () => void;
   onRemoveLine: (index: number) => void;
-  onProductSelect: (index: number, product: Components.Schemas.Product) => void;
   errors: FieldErrors<InvoiceFormData>;
 };
 
@@ -40,7 +39,6 @@ export const EditorInvoiceLines = ({
   selectedProducts,
   onAddLine,
   onRemoveLine,
-  onProductSelect,
   errors,
 }: EditorInvoiceLinesProps) => {
   const theme = useTheme();
@@ -66,15 +64,12 @@ export const EditorInvoiceLines = ({
       </XStack>
 
       {fields.map((field, index) => {
-        const product = selectedProducts.get(index);
         return (
           <EditorInvoiceLineItem
             key={field.id}
             control={control}
             index={index}
             field={field}
-            product={product}
-            onProductSelect={onProductSelect}
             onRemove={onRemoveLine}
             fieldsLength={fields.length}
             errors={errors}

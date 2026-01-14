@@ -165,7 +165,7 @@ export const HomeScreen = () => {
               onEndReachedThreshold={0.5}
               ListEmptyComponent={renderEmpty}
               ListFooterComponent={renderFooter}
-              contentContainerStyle={{ paddingBottom: 100, flexGrow: 1 }}
+              contentContainerStyle={{ flexGrow: 1 }}
               refreshControl={
                 <RefreshControl
                   refreshing={refreshing || (isFetching && !isFetchingNextPage)}

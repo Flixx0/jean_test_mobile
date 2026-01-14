@@ -20,9 +20,9 @@ jest.mock('@hooks/useSubmitInvoice', () => ({
   })),
 }));
 
-jest.mock('@hooks/useInvoiceFormInitialization', () => ({
-  useInvoiceFormInitialization: jest.fn(() => ({
-    invoiceData: null,
+jest.mock('@queries/useInvoice', () => ({
+  useInvoiceOptional: jest.fn(() => ({
+    data: null,
   })),
 }));
 

@@ -9,10 +9,17 @@ type EditorDateFieldsProps = {
 };
 
 export const EditorDateFields = ({ control, errors }: EditorDateFieldsProps) => {
+  const dateId = 'editor-date-field';
+  const deadlineId = 'editor-deadline-field';
+
   return (
     <XStack testID="editor-date-fields" flex={1} gap="$3">
       <YStack flex={1} gap="$1">
-        <Label testID="editor-date-fields-date-label" htmlFor="date" fontSize="$4" color="$color12">
+        <Label
+          testID="editor-date-fields-date-label"
+          htmlFor={dateId}
+          fontSize="$4"
+          color="$color12">
           Date
         </Label>
         <Controller
@@ -21,7 +28,7 @@ export const EditorDateFields = ({ control, errors }: EditorDateFieldsProps) => 
           rules={{ required: 'Date is required' }}
           render={({ field: { onChange, onBlur, value } }) => (
             <DatePickerInput
-              id="date"
+              id={dateId}
               value={value}
               onChange={onChange}
               onBlur={onBlur}
@@ -38,7 +45,7 @@ export const EditorDateFields = ({ control, errors }: EditorDateFieldsProps) => 
       <YStack flex={1} gap="$1">
         <Label
           testID="editor-date-fields-deadline-label"
-          htmlFor="deadline"
+          htmlFor={deadlineId}
           fontSize="$4"
           color="$color12">
           Deadline
@@ -49,7 +56,7 @@ export const EditorDateFields = ({ control, errors }: EditorDateFieldsProps) => 
           rules={{ required: 'Deadline is required' }}
           render={({ field: { onChange, onBlur, value } }) => (
             <DatePickerInput
-              id="deadline"
+              id={deadlineId}
               value={value}
               onChange={onChange}
               onBlur={onBlur}

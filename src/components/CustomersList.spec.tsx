@@ -55,10 +55,7 @@ describe('CustomersList', () => {
   });
 
   it('renders customers list', () => {
-    const mockOnSelectCustomer = jest.fn();
-    render(
-      withSpecWrapper(<CustomersList searchQuery="" onSelectCustomer={mockOnSelectCustomer} />),
-    );
+    render(withSpecWrapper(<CustomersList searchQuery="" />));
 
     expect(screen.getByTestId('customers-list')).toBeTruthy();
   });
@@ -88,10 +85,7 @@ describe('CustomersList', () => {
       refetch: jest.fn(),
     } as any);
 
-    const mockOnSelectCustomer = jest.fn();
-    render(
-      withSpecWrapper(<CustomersList searchQuery="" onSelectCustomer={mockOnSelectCustomer} />),
-    );
+    render(withSpecWrapper(<CustomersList searchQuery="" />));
 
     expect(screen.getByText('No customers found.')).toBeTruthy();
   });

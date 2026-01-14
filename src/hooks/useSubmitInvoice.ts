@@ -1,16 +1,19 @@
 import { useCallback, useState } from 'react';
 import { Alert } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
+import { UseFormReset } from 'react-hook-form';
 import { useCreateInvoice } from '@queries/useCreateInvoice';
 import { useUpdateInvoice } from '@queries/useUpdateInvoice';
+import { useSelection } from '@contexts/SelectionContext';
 import type { Paths } from '@api/generated/client';
-import type { InvoiceFormDataWithIds } from '@components/EditorInvoiceLines';
+import type { InvoiceFormData, InvoiceFormDataWithIds } from '@components/EditorInvoiceLines';
 
 type UseSubmitInvoiceParams = {
   isEditMode: boolean;
   invoiceId?: number;
   originalLineIds: Set<number>;
   navigation: NavigationProp<any>;
+  reset: UseFormReset<InvoiceFormData>;
 };
 
 export const useSubmitInvoice = ({
@@ -18,9 +21,11 @@ export const useSubmitInvoice = ({
   invoiceId,
   originalLineIds,
   navigation,
+  reset,
 }: UseSubmitInvoiceParams) => {
   const createInvoiceMutation = useCreateInvoice();
   const updateInvoiceMutation = useUpdateInvoice();
+  const { clearSelection } = useSelection();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onSubmit = useCallback(
@@ -87,6 +92,8 @@ export const useSubmitInvoice = ({
           const response = await createInvoiceMutation.mutateAsync(payload);
           if (response?.id) {
             Alert.alert('Invoice created successfully', `Invoice ID: ${response.id}`);
+            clearSelection();
+            reset();
           } else {
             navigation.goBack();
           }
@@ -104,6 +111,8 @@ export const useSubmitInvoice = ({
       updateInvoiceMutation,
       navigation,
       originalLineIds,
+      clearSelection,
+      reset,
     ],
   );
 

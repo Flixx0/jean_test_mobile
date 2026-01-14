@@ -3,6 +3,7 @@ import { FlatList, Pressable, StyleSheet } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { Text, XStack, YStack, useTheme } from '@ui/index';
 import { useInfiniteCustomers } from '@queries/useInfiniteCustomers';
+import { useSelection } from '@contexts/SelectionContext';
 import type { Components } from '@api/generated/client';
 import type { EditorStackParams } from '@navigators/EditorStack';
 
@@ -10,17 +11,13 @@ type Customer = Components.Schemas.Customer;
 
 type CustomersListProps = {
   searchQuery: string;
-  onSelectCustomer: (customer: Customer) => void;
   onTotalCountChange?: (count: number) => void;
 };
 
-export const CustomersList = ({
-  searchQuery,
-  onSelectCustomer,
-  onTotalCountChange,
-}: CustomersListProps) => {
+export const CustomersList = ({ searchQuery, onTotalCountChange }: CustomersListProps) => {
   const navigation = useNavigation<NavigationProp<EditorStackParams>>();
   const theme = useTheme();
+  const { setSelectedCustomer } = useSelection();
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteCustomers({
     query: searchQuery,
@@ -42,10 +39,10 @@ export const CustomersList = ({
 
   const handleSelectCustomer = useCallback(
     (customer: Customer) => {
-      onSelectCustomer(customer);
+      setSelectedCustomer(customer);
       navigation.goBack();
     },
-    [onSelectCustomer, navigation],
+    [setSelectedCustomer, navigation],
   );
 
   const renderCustomerItem = useCallback(

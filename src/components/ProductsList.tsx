@@ -1,8 +1,9 @@
 import { useCallback, useEffect } from 'react';
 import { FlatList, Pressable, StyleSheet } from 'react-native';
-import { useNavigation, NavigationProp } from '@react-navigation/native';
+import { useNavigation, NavigationProp, useRoute, RouteProp } from '@react-navigation/native';
 import { Text, XStack, YStack, useTheme } from '@ui/index';
 import { useInfiniteProducts } from '@queries/useInfiniteProducts';
+import { useSelection } from '@contexts/SelectionContext';
 import type { Components } from '@api/generated/client';
 import type { EditorStackParams } from '@navigators/EditorStack';
 
@@ -10,17 +11,15 @@ type Product = Components.Schemas.Product;
 
 type ProductsListProps = {
   searchQuery: string;
-  onSelectProduct: (product: Product) => void;
   onTotalCountChange?: (count: number) => void;
 };
 
-export const ProductsList = ({
-  searchQuery,
-  onSelectProduct,
-  onTotalCountChange,
-}: ProductsListProps) => {
+export const ProductsList = ({ searchQuery, onTotalCountChange }: ProductsListProps) => {
   const navigation = useNavigation<NavigationProp<EditorStackParams>>();
+  const route = useRoute<RouteProp<EditorStackParams, 'ProductSelect'>>();
   const theme = useTheme();
+  const { setProductAt } = useSelection();
+  const productIndex = (route.params as { index?: number })?.index ?? null;
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteProducts({
     query: searchQuery,
@@ -42,10 +41,12 @@ export const ProductsList = ({
 
   const handleSelectProduct = useCallback(
     (product: Product) => {
-      onSelectProduct(product);
-      navigation.goBack();
+      if (productIndex !== null) {
+        setProductAt(productIndex, product);
+        navigation.goBack();
+      }
     },
-    [onSelectProduct, navigation],
+    [productIndex, setProductAt, navigation],
   );
 
   const renderProductItem = useCallback(
