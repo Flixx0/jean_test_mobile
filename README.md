@@ -215,6 +215,7 @@ yarn test --coverage
 
 ### Technical
 - **Error manager**: Implement centralized error handling and management system with bottom sheet  and toast notifications for better UX
+- **e2e tests**: Implement e2e tests for the app with detox and jest-native-testing-library for better testing and coverage
 
 ## 🤝 Contributing
 
