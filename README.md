@@ -1,106 +1,197 @@
 # Jean Test Mobile
 
-JeanTest is a React Native invoicing mobile application. It is used by business owners to create and manage invoices with their customers.
+JeanTest is a React Native invoicing mobile application built with Expo. It allows business owners to create and manage invoices with their customers.
 
-This repository contains the skeleton of JeanTest & instructions for this React Native hiring test.
+## 📋 Table of Contents
 
-## Mission
+- [Features](#features)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Usage](#usage)
+- [Project Structure](#project-structure)
+- [Testing](#testing)
+- [Technologies](#technologies)
 
-Your goal is to build a feature-rich prototype of JeanTest that allows to:
+## ✨ Features
 
-- **List & quickly find invoices**
-- **Create new invoices**
-- **Manage existing invoices**
-  - Move them from drafts to finalized invoices
-  - Mark them as paid
-  - Update them
-  - Delete them
+- **List & Search Invoices** - Browse invoices with infinite scroll, search by customer name, and sort by various criteria
+- **Create New Invoices** - Build invoices with customer selection, multiple product lines, dates, and status configuration
+- **Manage Existing Invoices** - View, edit, finalize, mark as paid, or delete invoices
+- **Customer & Product Selection** - Search and select from customers and products when creating invoices
+- **Form Validation** - Comprehensive validation with real-time feedback
+- **Loading States** - Proper loading indicators and error handling throughout the app
 
-For this, you'll be leveraging an existing REST HTTP API hosted at `https://jean-test-api.herokuapp.com/`.
+## 📦 Prerequisites
 
-The API is documented with [OpenAPI](https://www.openapis.org/) and has documentation available [here](https://jean-test-api.herokuapp.com/api-docs/index.html). Each API call must be authenticated using an `X-SESSION` header with the provided token.
+Before you begin, ensure you have the following installed:
 
-### What's expected
+- **Node.js** (v18 or higher)
+- **Yarn** package manager
+- **Expo CLI** (optional, but recommended)
+- **iOS Simulator** (for macOS) or **Android Emulator** (for testing)
+- **Expo Go** app on your mobile device (for physical device testing)
 
-Your exercise submission should:
+## 🚀 Installation
 
-- **Have the essential features** listed above while maintaining an intuitive, performant, and maintainable codebase.
-- **Follow the standard coding practices** and include testing, just as you would when developing a real-world application with teammates.
-- **Leverage existing UI components** provided in `src/ui` by Tamagui to focus on composing screens and features. While you're welcome to add a new UI library, you'll need to justify such an addition.
-- **Use pre-installed dependencies** or add new ones if you have a legitimate use of them.
-- **Create a clear README** with comprehensive instructions for setup, usage, additional features, etc.
-
-### The interview
-
-To prepare the interview, please take the time to identify advanced features that could be added in the future (even if the API currently does not support it!).
-
-For each feature/tech improvement, we want to understand:
-
-- What led you to think about this
-- Why it would be useful
-- What might be missing for you to implement it (API limitations, technical constraints)
-
-### Submit your application
-
-- Create a private GitHub repository for your application code
-- Invite these GitHub users:
-  - @Lecsar
-  - @michaelvitello
-  - @EwaGuziejko
-  - @greeeg
-  - @Liinkiing
-  - @adrien-pennylane
-  <!-- - @keShraa -->
-- Share your repository URL through [this form](https://forms.gle/siH7Rezuq2V1mUJGA)
-
-## Getting started
+1. **Clone the repository**
 
 ```bash
-git clone git@github.com:pennylane-hq/jean_test_mobile.git
-
+git clone <your-repository-url>
 cd jean_test_mobile
+```
 
-yarn
+2. **Install dependencies**
 
+```bash
+yarn install
+```
+
+3. **Configure environment variables**
+
+Create a `.env` file in the root directory:
+
+```env
+API_URL=https://jean-test-api.herokuapp.com/
+API_TOKEN=your-api-token-here
+```
+
+> **Note**: The API is documented with [OpenAPI](https://jean-test-api.herokuapp.com/api-docs/index.html). All requests require an `X-SESSION` header with your API token.
+
+4. **Start the development server**
+
+```bash
 yarn start
 ```
 
-To start sending authenticated requests to the API, patch the `API_TOKEN` in `src/App.tsx`.
+This will start the Expo development server. You can then:
+- Press `i` to open iOS simulator
+- Press `a` to open Android emulator
+- Scan the QR code with Expo Go app on your device
 
-### Data model
+## 📱 Usage
 
-The REST API contains four resources: customers, products, invoices and invoice lines.
+### Home Screen
 
-Side notes:
+- **View invoices**: Scroll through the list of invoices
+- **Search**: Use the search bar to find invoices by customer first name
+- **Sort**: Tap the sort icon to change sorting options (date, total, status)
+- **Refresh**: Pull down to refresh the invoice list
+- **View details**: Tap on any invoice card to see full details
 
-- Invoices contain multiple invoice lines.
-- Invoice lines are accessed via their invoice. To update them, use the relevant invoice API endpoints.
+### Invoice Details Screen
 
-### API client
+- **View information**: See customer details, dates, invoice lines, and totals
+- **Edit**: Tap the edit button to modify the invoice
+- **Finalize**: Tap "Finalize invoice" to convert a draft to a finalized invoice
+- **Mark as paid**: Tap "Set as paid" to mark an invoice as paid
+- **Delete**: Tap the delete button to remove an invoice (only available for non-finalized, unpaid invoices)
 
-An API client based on `openapi-client-axios` is available through a React Context in `src/api/index.tsx`. The provider is mounted in `src/App.tsx` & the context can be consumed using the `useApi` hook from `src/api/index.tsx`.
+### Editor Screen
 
-```tsx
-const MyComponent = () => {
-  const apiClient = useApi();
+- **Create new invoice**: Navigate to the Editor tab and fill in the form
+- **Edit existing invoice**: Open an invoice and tap "Edit"
+- **Select customer**: Tap the customer field to search and select a customer
+- **Add invoice lines**: Tap "Add line" to add products to the invoice
+- **Select products**: Tap on a product field to search and select a product
+- **Set dates**: Use the date pickers to set invoice date and deadline
+- **Configure status**: Toggle finalized and paid status
+- **Save**: Tap "Create Invoice" or "Update Invoice" to save
 
-  useEffect(() => {
-    /**
-     * Get the first 50 invoices of customer 3
-     */
-    api
-      .getInvoices({
-        page: 1,
-        per_page: 50,
-        filter: JSON.stringify([{ field: 'customer_id', operator: 'eq', value: 3 }]),
-      })
-      .then((res) => {
-        // Do something...
-      });
-  }, [apiClient]);
+## 📁 Project Structure
 
-  return null;
-};
+The project follows a feature-based structure with clear separation of concerns:
+
+- **`src/api/`** - API client and generated types
+- **`src/components/`** - Reusable UI components
+- **`src/screens/`** - Screen components (Home, Invoice, Editor, etc.)
+- **`src/queries/`** - React Query hooks for data fetching
+- **`src/hooks/`** - Custom React hooks
+- **`src/navigators/`** - Navigation configuration
+- **`src/utils/`** - Utility functions
+- **`src/ui/`** - UI configuration and themes
+- **`src/types/`** - TypeScript type definitions
+
+## 🧪 Testing
+
+The project includes comprehensive test coverage with Jest and React Native Testing Library.
+
+### Run Tests
+
+```bash
+# Run all tests
+yarn test
+
+# Run tests in watch mode
+yarn test --watch
+
+# Run tests with coverage
+yarn test --coverage
 ```
 
-Good luck & Happy coding!
+### Test Structure
+
+- Tests are located alongside their components with `.spec.tsx` extension
+- All components and screens have corresponding test files
+- Test utilities are in `src/specs/wrapper.tsx`
+
+### Test Coverage
+
+- **27 test suites** covering all major components and screens
+- **155+ tests** ensuring functionality and edge cases
+- Tests include rendering, user interactions, and data flow validation
+
+## 🛠 Technologies
+
+- **React Native** (0.81.5) - Mobile framework
+- **Expo** (54.0.30) - Development platform
+- **TypeScript** - Type safety
+- **React Navigation** - Navigation library
+- **Tamagui** - UI component library
+- **React Query** (@tanstack/react-query) - Data fetching and caching
+- **React Hook Form** - Form management
+- **Jest** - Testing framework
+- **React Native Testing Library** - Component testing
+- **OpenAPI Client Axios** - API client generation
+- **date-fns** - Date manipulation
+
+
+## 🎯 Key Implementation Details
+
+### State Management
+
+- **React Query** for server state management
+- **React Hook Form** for form state
+- **React Context** for API client and UI theme
+
+### Data Fetching
+
+- Infinite scroll pagination for large lists
+- Optimistic updates for better UX
+- Automatic cache invalidation on mutations
+- Debounced search queries
+
+### Form Handling
+
+- Comprehensive validation
+- Dynamic field arrays for invoice lines
+- Real-time calculations
+- Error handling and user feedback
+
+### Navigation
+
+- Tab-based navigation for main screens
+- Stack navigation for detail views
+- Modal screens for selection (customers, products)
+
+## 🤝 Contributing
+
+This is a hiring test project. For questions or issues, please refer to the original test instructions.
+
+## 📄 License
+
+This project is part of a hiring test for Pennylane.
+
+---
+
+**Built with ❤️ using React Native and Expo**

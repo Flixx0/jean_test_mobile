@@ -41,3 +41,4 @@ ios/
 
 .tamagui
 .env
+coverage/
