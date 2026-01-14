@@ -20,6 +20,7 @@ type SelectionProviderProps = {
 };
 
 export const SelectionProvider = ({ children }: SelectionProviderProps) => {
+  // Setters are renamed to avoid conflicts with context function names
   const [selectedCustomer, setSelectedCustomerState] = useState<Customer | null>(null);
   const [selectedProducts, setSelectedProductsState] = useState<Map<number, Product>>(new Map());
 

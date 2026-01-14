@@ -79,7 +79,7 @@ export const HomeScreen = () => {
   }, [refetch]);
 
   const renderInvoiceItem = useCallback(
-    ({ item }: { item: (typeof invoices)[0] }) => (
+    ({ item }: { item: (typeof invoices)[number] }) => (
       <InvoiceCard invoice={item} onPress={() => navigate('Invoice', { id: item.id })} />
     ),
     [navigate],

@@ -244,7 +244,6 @@ export const EditorScreen = () => {
           <EditorInvoiceLines
             control={control}
             fields={fields}
-            selectedProducts={selectedProducts}
             onAddLine={addInvoiceLine}
             onRemoveLine={removeInvoiceLine}
             errors={formState.errors}
