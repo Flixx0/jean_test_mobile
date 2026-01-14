@@ -111,6 +111,7 @@ The project follows a feature-based structure with clear separation of concerns:
 - **`src/utils/`** - Utility functions
 - **`src/ui/`** - UI configuration and themes
 - **`src/types/`** - TypeScript type definitions
+- **`src/contexts/`** - Contexts for state management
 
 ## 🧪 Testing
 
@@ -167,7 +168,6 @@ yarn test --coverage
 ### Data Fetching
 
 - Infinite scroll pagination for large lists
-- Optimistic updates for better UX
 - Automatic cache invalidation on mutations
 - Debounced search queries
 
@@ -183,6 +183,38 @@ yarn test --coverage
 - Tab-based navigation for main screens
 - Stack navigation for detail views
 - Modal screens for selection (customers, products)
+
+## 🚀 Future Improvements
+
+### Performance & UX
+- **Home to details**: Use partial data for better performance and user experience
+- **FlashList**: Replace FlatList with FlashList for optimized list rendering
+- **Memoization**: Add React.memo and useMemo for better component performance
+- **Better animations**: Implement react-native-reanimated and react-native-shared-element for smoother transitions
+- **Skeletons**: Replace loading spinners with skeleton screens for better perceived performance
+- **Button animations**: Implement button animations for better user experience for onPress and loading states
+
+### User Experience
+- **Success toast**: Add toast notifications for successful actions
+- **Swipe actions**: Implement swipe gestures on list items for quick actions (edit, delete, finalize, mark as paid)
+- **Custom fullscreen modal**: Create a custom fullscreen modal component for better visual feedback and user experience
+- **Better haptics**: Improve haptic feedback on iOS for better user interaction
+- **I18n**: Add internationalization support for different languages, numbers and dates formats
+- **Price formatting**: Implement proper currency formatting for different currencies and locales
+- **Date formatting**: Improve date display with locale-aware formatting for different locales
+
+### Features
+- **Advanced search**: Multi-criteria search including invoice name/ID, customer name/ID, dates, and total
+- **Validation**: Add deadline validation (deadline must be after issue date)
+- **Fullscreen modal for edit**: Work with fullScreenModal for edit screen and fix Tamagui bottom sheet (currently not working)
+- **PDF export/import**: Export invoices as PDF files and import invoices from PDF files
+- **Push notifications**: Notifications for upcoming invoice deadlines with deep links to the invoice details screen
+- **Offline mode**: Support offline mode for draft invoices
+- **Statistics/Analytics**: Add dashboard with invoice statistics and analytics
+- **Bank account sync**: Real-time synchronization with bank accounts
+
+### Technical
+- **Error manager**: Implement centralized error handling and management system with bottom sheet  and toast notifications for better UX
 
 ## 🤝 Contributing
 
